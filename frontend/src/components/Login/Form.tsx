@@ -49,6 +49,12 @@ const useStyles = createUseStyles({
         '&:hover': {
             backgroundColor: '#43766C',
         },
+        animation: '$pulse 2s infinite',
+    },
+    '@keyframes pulse': {
+        '0%': { transform: 'scale(1)' },
+        '50%': { transform: 'scale(1.05)' },
+        '100%': { transform: 'scale(1)' },
     },
     wrapper: {
         display: 'flex',
@@ -91,12 +97,12 @@ const useStyles = createUseStyles({
     },
     LoginText: {
         fontSize: '1.7rem',
-        color: '#161A30',
+        color: '#76453B',
         marginBottom: '10px',
     },
     SignInText: {
         fontSize: '0.9rem',
-        color: '#161A30',
+        color: '#76453B',
         marginBottom: '10px',
     },
     wrapperText: {
@@ -120,6 +126,82 @@ const useStyles = createUseStyles({
         fontSize: '0.9rem',
         marginBottom: '10px',
         fontWeight: 'bold',
+    },
+    '@media (max-width: 1080px)': {
+        input: {
+            padding: '20px',
+            borderRadius: '25px',
+            border: '1px solid #ccc',
+            width: '75%',
+            height: '60px',
+            margin: '15px auto 15px',
+            '&::placeholder': {
+                fontSize: '0.8rem',
+            },
+            fontSize: '1rem',
+        },
+        button: {
+            fontSize: '1rem',
+            height: '60px',
+            margin: '10px auto 0px',
+        },
+        LoginText: {
+            fontSize: '3rem',
+            color: '#76453B',
+            marginBottom: '10px',
+            marginLeft: '100px',
+        },
+        SignInText: {
+            fontSize: '2rem',
+            color: '#76453B',
+            marginBottom: '10px',
+            marginLeft: '100px',
+        },
+        EmailFormatErrorStyle: {
+            fontSize: '1.4rem',
+        },
+        forgotPassword: {
+            fontSize: '1.2rem',
+            '&:hover': {
+                textDecoration: 'underline',
+            },
+            padding: '15px 80px 15px 0px',
+        },
+    },
+    '@media (max-width: 768px)': {
+        input: {
+            width: '90%',
+            height: '55px',
+            margin: '12px auto 12px',
+        },
+        button: {
+            fontSize: '1rem',
+            height: '55px',
+            margin: '0px auto 0px',
+        },
+        LoginText: {
+            fontSize: '1.7rem',
+            marginBottom: '10px',
+            marginLeft: '0px',
+        },
+        SignInText: {
+            fontSize: '1.3rem',
+            marginBottom: '10px',
+            marginLeft: '0px',
+        },
+        EmailFormatErrorStyle: {
+            fontSize: '1rem',
+        },
+        forgotPassword: {
+            fontSize: '0.9rem',
+            '&:hover': {
+                textDecoration: 'underline',
+            },
+            padding: '5px 15px 15px 0px',
+        },
+        wrapperText: {
+            paddingLeft: '50px',
+        },
     }
 });
 
@@ -144,7 +226,7 @@ const Form = () => {
 
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         if (!emailRegex.test(email)) {
-            setEmailFormatError('Wprowadź poprawny adres email.');
+            setEmailFormatError('Please provide correct email.');
             return;
         }
 
@@ -173,7 +255,7 @@ const Form = () => {
         setEmail(e.target.value);
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         if (!emailRegex.test(e.target.value)) {
-            setEmailFormatError('Wprowadź poprawny adres email.');
+            setEmailFormatError('Please provide correct email.');
         } else {
             setEmailFormatError('');
         }
@@ -186,7 +268,6 @@ const Form = () => {
             <p className={classes.SignInText}>Sign in to continue</p>
             </div>
                 <form onSubmit={handleSubmit} className={classes.form}>
-                {loginError && <p className={classes.errorBox}>{loginError}</p>}
                 <div className={classes.inputContainer}>
                     <input
                         type="email"
@@ -211,6 +292,7 @@ const Form = () => {
                     />
                     <a href="/resetPassword" className={classes.forgotPassword}>Forgot password?</a>
                 </div>
+                    {loginError && <p className={classes.errorBox}>{loginError}</p>}
                 <div className={classes.inputContainer}>
                     <button type="submit" className={classes.button}>
                         {isLoading ? 'Loading...' : 'SIGN IN'}

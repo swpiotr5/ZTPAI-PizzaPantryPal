@@ -14,13 +14,19 @@ const useStyles = createUseStyles({
         borderTopRightRadius: '20px',
         borderBottomRightRadius: '20px',
         width: '50%',
-        height: '100%'
+        height: '100%',
+        animation: '$fadeIn 1s ease forwards',
+    },
+    '@keyframes fadeIn': {
+        '0%': { opacity: 0, transform: 'translateY(-20px)' },
+        '100%': { opacity: 1, transform: 'translateY(0)' },
     },
     '@media (max-width: 1080px)': {
         right: {
             padding: '0px',
             borderTopRightRadius: '0px',
             borderBottomRightRadius: '0px',
+            width: '100%',
         },
     },
     '@media (max-width: 768px)': {

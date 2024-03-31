@@ -19,6 +19,7 @@ const useStyles = createUseStyles({
             padding: '0px',
             borderTopLeftRadius: '0px',
             borderBottomLeftRadius: '0px',
+            display: 'none',
         },
     },
     '@media (max-width: 768px)': {
