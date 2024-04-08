@@ -26,11 +26,16 @@ const useStyles = createUseStyles({
             transform: 'scale(1.1)',
             color: '#F8FAE5',
         },
+        '@media (max-width: 1080px)': {
+            marginBottom: '10px',
+            width: '130px',
+        },
         '@media (max-width: 600px)': {
             marginBottom: '10px',
             width: '80px',
             fontSize: '16px',
         },
+
     },
 });
 
