@@ -19,6 +19,7 @@ const useStyles = createUseStyles({
             width: '250px',
         },
         borderRadius: '0 10px 10px 0',
+        marginRight: '20px',
     },
     button: {
         position: 'absolute',
