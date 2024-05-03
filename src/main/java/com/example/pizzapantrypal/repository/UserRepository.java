@@ -4,11 +4,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.example.pizzapantrypal.models.User;
+import com.example.pizzapantrypal.models.Users;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface UserRepository extends JpaRepository<Users, Long> {
+    Optional<Users> findByUsername(String username);
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
 }

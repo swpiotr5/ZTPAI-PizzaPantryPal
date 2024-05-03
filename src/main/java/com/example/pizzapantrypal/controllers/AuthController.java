@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.pizzapantrypal.models.User;
+import com.example.pizzapantrypal.models.Users;
 import com.example.pizzapantrypal.models.ERole;
-import com.example.pizzapantrypal.models.Role;
+import com.example.pizzapantrypal.models.Roles;
 
 import com.example.pizzapantrypal.payload.request.LoginRequest;
 import com.example.pizzapantrypal.payload.request.SignupRequest;
@@ -78,27 +78,27 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
+        Users user = new Users(signupRequest.getUsername(), signupRequest.getEmail(), encoder.encode(signupRequest.getPassword()));
 
         Set<String> strRoles = signupRequest.getRole();
-        Set<Role> roles = new HashSet<>();
+        Set<Roles> roles = new HashSet<>();
 
         if(strRoles == null){
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+            Roles userRoles = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found. (1)"));
+            roles.add(userRoles);
         } else {
             strRoles.forEach(role -> {
                 switch(role) {
                     case "manager":
-                        Role manager = roleRepository.findByName(ERole.ROLE_MANAGER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        Roles manager = roleRepository.findByName(ERole.ROLE_MANAGER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found. (2)"));
                         roles.add(manager);
                         break;
                     default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
+                        Roles userRoles = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found. (3)"));
+                        roles.add(userRoles);
                 }
             });
         }

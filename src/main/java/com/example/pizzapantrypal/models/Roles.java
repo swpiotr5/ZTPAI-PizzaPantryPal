@@ -3,8 +3,8 @@ package com.example.pizzapantrypal.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "roles", uniqueConstraints = { @UniqueConstraint(columnNames = { "" }) })
+public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -13,10 +13,10 @@ public class Role {
     @Column(length = 20)
     private ERole name;
 
-    public Role() {
+    public Roles() {
     }
 
-    public Role(ERole name) {
+    public Roles(ERole name) {
         this.name = name;
     }
 
