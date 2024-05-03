@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:8080/api/auth/signup';
 
 const useStyles = createUseStyles({
     form: {
@@ -93,12 +96,17 @@ const useStyles = createUseStyles({
 });
 
 const Form = () => {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [emailError, setEmailError] = useState('');
     const classes = useStyles();
+
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(e.target.value);
+    };
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -117,6 +125,23 @@ const Form = () => {
     const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setConfirmPassword(e.target.value);
     };
+
+    async function registerUser(username: string, email: string, password: string) {
+        try {
+            const response = await axios.post(`${API_URL}`, {
+                username: username,
+                email: email,
+                password: password,
+            });
+            return response.data;
+        } catch (error) {
+            if ((error as Error).message.includes('ECONNREFUSED')) {
+                setErrorMessage("Błąd proxy: Nie można przekierować żądania. Brak połączenia z serwerem.");
+            } else {
+                setErrorMessage("Brak połączenia z serwerem.");
+            }
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -137,27 +162,35 @@ const Form = () => {
             return;
         }
 
-        // try {
-        //     const response = await registerUser(email, password);
-        //     if (response.error) {
-        //         setErrorMessage(response.message);
-        //         return;
-        //     }
-        //
-        //     setErrorMessage("Konto utworzone pomyślnie.");
-        // } catch (error) {
-        //     if ((error as Error).message.includes('ECONNREFUSED')) {
-        //         setErrorMessage("Błąd proxy: Nie można przekierować żądania. Brak połączenia z serwerem.");
-        //     } else {
-        //         setErrorMessage("Brak połączenia z serwerem.");
-        //     }
-        // }
+        try {
+            const response = await registerUser(username, email, password);
+            if (response.error) {
+                setErrorMessage(response.message);
+                return;
+            }
+
+            setErrorMessage("Konto utworzone pomyślnie.");
+        } catch (error) {
+            if ((error as Error).message.includes('ECONNREFUSED')) {
+                setErrorMessage("Błąd proxy: Nie można przekierować żądania. Brak połączenia z serwerem.");
+            } else {
+                setErrorMessage("Brak połączenia z serwerem.");
+            }
+        }
     };
 
     return (
         <div className={classes.wrapper}>
             <form onSubmit={handleSubmit} className={classes.form} >
                 <div className={classes.inputContainer}>
+                    <input
+                        type="text"
+                        id="username"
+                        value={username}
+                        placeholder="USERNAME"
+                        onChange={handleUsernameChange}
+                        className={classes.input}
+                    />
                     <input
                         type="email"
                         id="email"
@@ -172,7 +205,7 @@ const Form = () => {
                 </div>
                 <div className={classes.inputContainer}>
                     <input className={classes.input} type="password" id="password" placeholder="PASSWORD"
-                           value={password} onChange={handlePasswordChange} />
+                           value={password} onChange={handlePasswordChange}/>
                 </div>
                 <div className={classes.inputContainer}>
                     <input className={classes.input} type="password" id="confirmPassword" placeholder=" CONFIRM PASSWORD" value={confirmPassword} onChange={handleConfirmPasswordChange} />

@@ -209,7 +209,7 @@ const Form = () => {
     const classes = useStyles();
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [emailFormatError, setEmailFormatError] = useState('');
     const [loginError, setLoginError] = useState('');
@@ -224,62 +224,44 @@ const Form = () => {
 
         setIsLoading(true);
 
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (!emailRegex.test(email)) {
-            setEmailFormatError('Please provide correct email.');
-            return;
-        }
+        try {
+            const response = await axios.post('http://localhost:8080/api/auth/signin', {
+                username: username,
+                password: password,
+            });
 
-        // try {
-        //     const response = await loginUser(email, password);
-        //
-        //     if (response.success) {
-        //         navigate('/home');
-        //     } else {
-        //         const errorMessage = response.message || 'Nieprawidłowy email lub hasło.';
-        //         setLoginError(errorMessage);
-        //     }
-        // } catch (error) {
-        //     if ((error as Error).message === 'Network Error.') {
-        //         setLoginError('Brak połączenia. Spróbuj ponownie później.');
-        //     } else {
-        //         setLoginError('Wystąpił błąd podczas weryfikacji danych. Spróbuj ponownie później.');
-        //     }
-        //     console.error('Wystąpił błąd podczas weryfikacji danych.', error);
-        // } finally {
-        //     setIsLoading(false);
-        // }
+            if (response.data) {
+                navigate('/pantry');
+            } else {
+                setLoginError('Nieprawidłowy username lub hasło.');
+            }
+        } catch (error) {
+            setLoginError('Wystąpił błąd podczas logowania.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (!emailRegex.test(e.target.value)) {
-            setEmailFormatError('Please provide correct email.');
-        } else {
-            setEmailFormatError('');
-        }
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(e.target.value);
     };
 
     return (
         <div className={classes.wrapper}>
             <div className={classes.wrapperText}>
-            <p className={classes.LoginText}>Login</p>
-            <p className={classes.SignInText}>Sign in to continue</p>
+                <p className={classes.LoginText}>Login</p>
+                <p className={classes.SignInText}>Sign in to continue</p>
             </div>
-                <form onSubmit={handleSubmit} className={classes.form}>
+            <form onSubmit={handleSubmit} className={classes.form}>
                 <div className={classes.inputContainer}>
                     <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={handleEmailChange}
-                        className={`${classes.input} ${emailFormatError ? classes.inputError : ''}`}
-                        placeholder="EMAIL"
+                        type="text"
+                        id="username"
+                        value={username}
+                        onChange={handleUsernameChange}
+                        className={classes.input}
+                        placeholder="USERNAME"
                     />
-                    <div className={classes.errorWrapperInfo}>
-                        {emailFormatError && <p className={classes.EmailFormatErrorStyle}>{emailFormatError}</p>}
-                    </div>
                 </div>
                 <div className={classes.inputContainer}>
                     <input
@@ -292,7 +274,7 @@ const Form = () => {
                     />
                     <a href="/resetPassword" className={classes.forgotPassword}>Forgot password?</a>
                 </div>
-                    {loginError && <p className={classes.errorBox}>{loginError}</p>}
+                {loginError && <p className={classes.errorBox}>{loginError}</p>}
                 <div className={classes.inputContainer}>
                     <button type="submit" className={classes.button}>
                         {isLoading ? 'Loading...' : 'SIGN IN'}

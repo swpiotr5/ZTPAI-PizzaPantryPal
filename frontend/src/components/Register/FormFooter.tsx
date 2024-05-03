@@ -21,7 +21,7 @@ const FormFooter = () => {
     const classes = useStyles();
     return (
         <div className={classes.footer}>
-            <p className={classes.footerSignUp}>Already has an account? <a href="/login">Sign up</a></p>
+            <p className={classes.footerSignUp}>Already has an account? <a href="/login">Sign in</a></p>
             <p className={classes.footerText}>&copy; 2024, PizzaPantryPal. All rights reserved.</p>
         </div>
     )
