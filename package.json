@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/react-helmet": "^6.1.11",
     "react-helmet": "^6.1.0"
   }
