@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import { createUseStyles } from 'react-jss';
 import PantryItem from '../components/Pantry/PantryItem';
 import SearchBar from '../components/Pantry/SearchBar';
 import SortingButtons from '../components/Pantry/SortingButtons';
+import axios from "axios";
 
 const useStyles = createUseStyles({
     gridContainer: {
@@ -55,7 +56,17 @@ const useStyles = createUseStyles({
 
 const Pantry = () => {
     const classes = useStyles();
+    const [ingredients, setIngredients] = useState([]);
 
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/available_ingredients')
+            .then(response => {
+                setIngredients(response.data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }, []);
     return (
         <div>
             <DefaultTemplate>
@@ -63,8 +74,8 @@ const Pantry = () => {
                     <SearchBar />
                     <SortingButtons />
                     <div className={classes.gridContainer}>
-                        {Array.from({ length: 20 }).map((_, index) => (
-                            <PantryItem key={index} index={index} />
+                        {ingredients.map((ingredient, index) => (
+                            <PantryItem key={index} index={index} ingredient={ingredient} />
                         ))}
                     </div>
                 </div>

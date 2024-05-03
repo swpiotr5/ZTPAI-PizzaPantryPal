@@ -24,19 +24,26 @@ const useStyles = createUseStyles({
     },
 });
 
-interface PantryItemProps {
-    index: number;
+interface Ingredient {
+    ingredient_id: number;
+    name: string;
+    img: string;
+    userIngredients: null;
 }
 
+interface PantryItemProps {
+    index: number;
+    ingredient: Ingredient;
+}
 
-const PantryItem = ({ index }: PantryItemProps) => {
+const PantryItem = ({ index, ingredient }: PantryItemProps) => {
     const classes = useStyles();
 
     return (
         <div key={index} className={classes.gridItem}>
             <div className={classes.gridItemContent}>
-                <span>Product {index + 1}</span>
-                <span>{(index + 1) * 10}g</span>
+                <span>{ingredient.name}</span>
+                {/*<img src={ingredient.img} alt={ingredient.name} />*/}
             </div>
         </div>
     );
