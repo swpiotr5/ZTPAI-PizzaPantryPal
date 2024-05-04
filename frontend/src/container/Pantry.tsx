@@ -59,7 +59,12 @@ const Pantry = () => {
     const [ingredients, setIngredients] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/available_ingredients')
+        const token = localStorage.getItem('access_token');
+        axios.get('http://localhost:8080/api/available_ingredients', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => {
                 setIngredients(response.data);
             })

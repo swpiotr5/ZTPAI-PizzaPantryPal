@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.example.pizzapantrypal.security.jwt.AuthEntryPointJwt;
 import com.example.pizzapantrypal.security.jwt.AuthTokenFilter;
 import com.example.pizzapantrypal.security.services.UserDetailsServiceImpl;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -52,6 +53,29 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.csrf(csrf -> csrf.disable())
+//                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(auth ->
+//                        auth.requestMatchers("/api/auth/**").permitAll()
+//                                .requestMatchers("/api/test/**").permitAll()
+//                                .requestMatchers("/api/available_ingredients/**").permitAll() //tymczasowe
+//                                .requestMatchers("/api/pantries/**").permitAll() //tymczasowe
+//                                .requestMatchers("/api/pizza_templates/**").permitAll() //tymczasowe
+//                                .requestMatchers("/api/pizza_template_ingredients/**").permitAll() //tymczasowe
+//                                .requestMatchers("/api/user_ingredients/**").permitAll() //tymczasowe
+//                                .requestMatchers("/api/user_pizza_templates/**").permitAll() //tymczasowe
+//                                .anyRequest().authenticated()
+//                                auth.anyRequest().permitAll()
+//                );
+//        http.authenticationProvider(authenticationProvider());
+//        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -59,7 +83,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         http.authenticationProvider(authenticationProvider());
@@ -67,4 +90,5 @@ public class WebSecurityConfig {
 
         return http.build();
     }
+
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import { createUseStyles } from "react-jss";
 import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
@@ -57,10 +57,10 @@ const useStyles = createUseStyles({
 const Profile = () => {
     const classes = useStyles();
     const navigate = useNavigate();
-
     const handleLogout = () => {
+        localStorage.removeItem('access_token');
         console.log('User logged out');
-        navigate('/login');
+        window.location.reload();
     };
 
     return (

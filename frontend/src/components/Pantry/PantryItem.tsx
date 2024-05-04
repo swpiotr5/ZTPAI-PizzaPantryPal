@@ -12,15 +12,21 @@ const useStyles = createUseStyles({
             boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
             height: '80px',
             margin: '15px 30px',
+
         },
     },
     gridItemContent: {
         display: 'flex',
-        justifyContent: 'space-between',
+        gap: '30px',
         alignItems: 'center',
         padding: '30px',
         height: '100%',
         fontSize: '25px',
+    },
+    gridItemImage: {
+        '@media (max-width: 600px)': {
+            width: '50px',
+        },
     },
 });
 
@@ -42,8 +48,8 @@ const PantryItem = ({ index, ingredient }: PantryItemProps) => {
     return (
         <div key={index} className={classes.gridItem}>
             <div className={classes.gridItemContent}>
+                <img className={classes.gridItemImage} src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name}/>
                 <span>{ingredient.name}</span>
-                {/*<img src={ingredient.img} alt={ingredient.name} />*/}
             </div>
         </div>
     );
