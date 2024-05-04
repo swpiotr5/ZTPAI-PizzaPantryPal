@@ -4,7 +4,8 @@ import { createUseStyles } from "react-jss";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import { FaUserCircle, FaSignOutAlt, FaCaretDown } from 'react-icons/fa';
-
+import Modal from "../components/Profile/Modal";
+import Countdown from "../components/Profile/Countdown";
 
 const useStyles = createUseStyles({
     wrapper: {
@@ -137,6 +138,38 @@ const useStyles = createUseStyles({
             backgroundColor: '#76453B',
         },
     },
+    modalText: {
+        marginBottom: '20px',
+    },
+    modalButton: {
+        backgroundColor: '#76453B',
+        color: '#F8FAE5',
+        border: 'none',
+        borderRadius: '5px',
+        padding: '10px 20px',
+        margin: '0 10px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease',
+        '&:hover': {
+            backgroundColor: '#B19470',
+        },
+    },
+    modalButtonDisabled: {
+        backgroundColor: 'gray',
+        color: '#F8FAE5',
+        border: 'none',
+        borderRadius: '5px',
+        padding: '10px 20px',
+        margin: '0 10px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        cursor: 'not-allowed',
+    },
+    username: {
+        color: 'red',
+    },
 });
 
 interface User {
@@ -153,9 +186,37 @@ const Profile = () => {
     const [user, setUser] = useState<User | null>(null);
     const [allUsers, setAllUsers] = useState<User[] | null>(null);
     const [showUsers, setShowUsers] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [userToDelete, setUserToDelete] = useState('');
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+    useEffect(() => {
+        if (showModal) {
+            setIsButtonDisabled(true);
+            const timer = setTimeout(() => {
+                setIsButtonDisabled(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showModal]);
 
     const handleManageUsersClick = () => {
         setShowUsers(!showUsers);
+    };
+
+    const fetchAllUsers = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await axios.get('http://localhost:8080/api/user/all', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log(response.data);
+            setAllUsers(response.data);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     useEffect(() => {
@@ -189,20 +250,6 @@ const Profile = () => {
     }, []);
 
     useEffect(() => {
-        const fetchAllUsers = async () => {
-            try {
-                const token = localStorage.getItem('access_token');
-                const response = await axios.get('http://localhost:8080/api/user/all', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                console.log(response.data);
-                setAllUsers(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
         if (user && user.roles[0].name === 'manager') {
             fetchAllUsers();
         }
@@ -219,8 +266,26 @@ const Profile = () => {
     };
 
     const handleRemoveUserClick = (username: string) => {
-        console.log(`Manage role for ${username}`);
+        setUserToDelete(username);
+        setShowModal(true);
     };
+
+    const handleConfirmDelete = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            await axios.post('http://localhost:8080/api/user/delete', userToDelete, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setShowModal(false);
+            setUserToDelete('');
+            fetchAllUsers();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div>
             <DefaultTemplate>
@@ -275,6 +340,18 @@ const Profile = () => {
                             ))}
                             </tbody>
                         </table>
+                    )}
+                    {showModal && (
+                        <Modal>
+                            <p className={classes.modalText}>Are you sure you want to delete user <span className={classes.username}>{userToDelete}</span>?</p>
+                            <div>
+                                <button disabled={isButtonDisabled} onClick={handleConfirmDelete}
+                                        className={isButtonDisabled ? classes.modalButtonDisabled : classes.modalButton}>Yes
+                                </button>
+                                <button onClick={() => setShowModal(false)} className={classes.modalButton}>No</button>
+                            </div>
+                            <Countdown from={5} onComplete={() => {}}/>
+                        </Modal>
                     )}
                 </div>
             </DefaultTemplate>

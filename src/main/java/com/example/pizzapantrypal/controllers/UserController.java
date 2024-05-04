@@ -3,9 +3,7 @@ package com.example.pizzapantrypal.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.example.pizzapantrypal.models.Users;
 import com.example.pizzapantrypal.repository.UserRepository;
 import com.example.pizzapantrypal.security.services.UserDetailsImpl;
@@ -28,5 +26,10 @@ public class UserController {
     @GetMapping("/all")
     public List<Users> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @PostMapping("/delete")
+    public void deleteUser(@RequestBody String username) {
+        userRepository.deleteByUsername(username);
     }
 }
