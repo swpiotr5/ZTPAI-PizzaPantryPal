@@ -58,6 +58,11 @@ const useStyles = createUseStyles({
         '&:hover': {
             transform: 'scale(1.1)',
         },
+        '@media (max-width: 600px)': {
+            width: '150px',
+            marginBottom: '20px',
+            marginTop: '20px',
+        },
     },
 });
 

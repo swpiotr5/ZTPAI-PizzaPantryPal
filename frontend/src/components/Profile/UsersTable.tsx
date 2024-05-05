@@ -28,6 +28,7 @@ const useStyles = createUseStyles({
             '&:nth-child(2)': {
                 display: 'none',
             },
+            fontSize: '14px',
         },
     },
     manageRoleButton: {
@@ -43,6 +44,11 @@ const useStyles = createUseStyles({
         '&:hover': {
             backgroundColor: '#B19470',
         },
+        '@media (max-width: 600px)': {
+            padding: '5px 10px',
+            fontSize: '12px',
+
+        },
     },
     removeUserButton: {
         backgroundColor: '#481E14',
@@ -56,6 +62,11 @@ const useStyles = createUseStyles({
         transition: 'background-color 0.3s ease',
         '&:hover': {
             backgroundColor: '#76453B',
+        },
+        '@media (max-width: 600px)': {
+            padding: '5px 10px',
+            fontSize: '12px',
+
         },
     },
 });
