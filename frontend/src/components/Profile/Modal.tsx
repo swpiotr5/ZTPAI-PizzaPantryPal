@@ -12,6 +12,9 @@ const useStyles = createUseStyles({
         borderRadius: '10px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         zIndex: 1000,
+        '@media (max-width: 600px)': {
+            width: '90%',
+        },
     },
     overlay: {
         position: 'fixed',

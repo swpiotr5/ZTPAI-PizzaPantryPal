@@ -21,6 +21,7 @@ const useStyles = createUseStyles({
         borderRadius: '5px',
         padding: '10px 20px',
         fontSize: '16px',
+        margin: '0 10px',
         fontWeight: 'bold',
         cursor: 'pointer',
         transition: 'background-color 0.3s ease',

@@ -3,13 +3,13 @@ import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import Modal from "../components/Profile/Modal";
-import Countdown from "../components/Profile/Countdown";
 import { ManageUsersButton } from "../components/Profile/ManageUsersButton";
 import { LogoutButton } from "../components/Profile/LogoutButton";
 import { UserDetails } from "../components/Profile/UserDetails";
 import { UsersTable } from "../components/Profile/UsersTable";
 import { DeleteUserModal } from "../components/Profile/DeleteUserModal";
 import {createUseStyles} from "react-jss";
+import { ManageRoleModal } from "../components/Profile/ManageRoleModal";
 
 
 const useStyles = createUseStyles({
@@ -32,6 +32,9 @@ const useStyles = createUseStyles({
             borderRadius: '20px',
             width: '100%',
             backgroundColor:  '#F8FAE5',
+            '&::-webkit-scrollbar': {
+                display: 'none',
+            },
         },
         '&::-webkit-scrollbar': {
             width: '10px',
@@ -75,6 +78,8 @@ const Profile = () => {
     const [showModal, setShowModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState('');
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [showChangeRoleModal, setShowChangeRoleModal] = useState(false);
+    const [userToChangeRole, setUserToChangeRole] = useState('');
 
     useEffect(() => {
         if (showModal) {
@@ -141,6 +146,16 @@ const Profile = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (showChangeRoleModal) {
+            setIsButtonDisabled(true);
+            const timer = setTimeout(() => {
+                setIsButtonDisabled(false);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [showChangeRoleModal]);
+
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         console.log('User logged out');
@@ -148,7 +163,8 @@ const Profile = () => {
     };
 
     const handleManageRoleClick = (username: string) => {
-        console.log(`Manage role for ${username}`);
+        setUserToChangeRole(username);
+        setShowChangeRoleModal(true);
     };
 
     const handleRemoveUserClick = (username: string) => {
@@ -172,6 +188,22 @@ const Profile = () => {
         }
     };
 
+    const handleConfirmChangeRole = async () => {
+        try {
+            const token = localStorage.getItem('access_token');
+            await axios.post('http://localhost:8080/api/user/changerole', userToChangeRole, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setShowChangeRoleModal(false);
+            setUserToChangeRole('');
+            fetchAllUsers();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div>
             <DefaultTemplate>
@@ -187,6 +219,15 @@ const Profile = () => {
                     )}
                     {showModal && (
                         <DeleteUserModal showModal={showModal} userToDelete={userToDelete} isButtonDisabled={isButtonDisabled} handleConfirmDelete={handleConfirmDelete} setShowModal={setShowModal} />
+                    )}
+                    {showChangeRoleModal && (
+                        <ManageRoleModal
+                            showModal={showChangeRoleModal}
+                            userToChangeRole={userToChangeRole}
+                            isButtonDisabled={isButtonDisabled}
+                            handleConfirmChangeRole={handleConfirmChangeRole}
+                            setShowChangeRoleModal={setShowChangeRoleModal}
+                        />
                     )}
                 </div>
             </DefaultTemplate>

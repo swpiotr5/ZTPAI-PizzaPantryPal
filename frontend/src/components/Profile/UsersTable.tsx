@@ -24,6 +24,11 @@ const useStyles = createUseStyles({
         padding: '10px',
         borderBottom: '1px solid #ccc',
         textAlign: 'center',
+        '@media (max-width: 600px)': {
+            '&:nth-child(2)': {
+                display: 'none',
+            },
+        },
     },
     manageRoleButton: {
         backgroundColor: '#76453B',
@@ -64,6 +69,18 @@ interface UsersTableProps {
 
 export const UsersTable: React.FC<UsersTableProps> = ({ showUsers, allUsers, handleManageRoleClick, handleRemoveUserClick }) => {
     const classes = useStyles();
+
+    const mapRole = (roleName: string) => {
+        switch (roleName) {
+            case 'ROLE_USER':
+                return 'user';
+            case 'ROLE_MANAGER':
+                return 'manager';
+            default:
+                return roleName;
+        }
+    };
+
     if (!showUsers || !allUsers) {
         return null;
     }
@@ -83,12 +100,14 @@ export const UsersTable: React.FC<UsersTableProps> = ({ showUsers, allUsers, han
                 <tr key={index}>
                     <td className={classes.tableCell}>{user.username}</td>
                     <td className={classes.tableCell}>{user.email}</td>
-                    <td className={classes.tableCell}>{user.roles[0].name}</td>
+                    <td className={classes.tableCell}>{mapRole(user.roles[0].name)}</td>
                     <td className={classes.tableCell}>
+                        {user.username !== 'admin' && (
                         <button onClick={() => handleManageRoleClick(user.username)}
                                 className={classes.manageRoleButton}>
                             Manage Role
                         </button>
+                        )}
                     </td>
                     <td className={classes.tableCell}>
                         {user.roles[0].name !== 'ROLE_MANAGER' && (
