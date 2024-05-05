@@ -15,8 +15,6 @@ const App = () => {
             if (localStorage.getItem('access_token') !== null) {
                 setIsAuth(true);
             }
-            console.log(localStorage.getItem('access_token'));
-
         };
 
         checkAuth();
