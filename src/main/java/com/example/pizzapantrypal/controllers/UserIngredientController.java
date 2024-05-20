@@ -23,5 +23,8 @@ public class UserIngredientController {
     public UserIngredient createUserIngredient(@RequestBody UserIngredient userIngredient) {
         return userIngredientRepository.save(userIngredient);
     }
-
+    @PostMapping("/add")
+    public UserIngredient addUserIngredient(@RequestBody UserIngredient userIngredient) {
+        return userIngredientRepository.save(userIngredient);
+    }
 }

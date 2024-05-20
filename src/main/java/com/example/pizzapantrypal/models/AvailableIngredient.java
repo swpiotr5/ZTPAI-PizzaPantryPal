@@ -26,8 +26,8 @@ public class AvailableIngredient {
         this.img = img;
     }
 
-    @OneToOne(mappedBy = "availableIngredient")
-    private UserIngredient userIngredients;
+    @OneToMany(mappedBy = "availableIngredient")
+    private Set<UserIngredient> userIngredients;
 
     public Integer getIngredient_id() {
         return ingredient_id;
@@ -53,12 +53,11 @@ public class AvailableIngredient {
         this.img = img;
     }
 
-    public UserIngredient getUserIngredients() {
+    public Set<UserIngredient> getUserIngredients() {
         return userIngredients;
     }
 
-    public void setUserIngredients(UserIngredient userIngredients) {
+    public void setUserIngredients(Set<UserIngredient> userIngredients) {
         this.userIngredients = userIngredients;
-    }
-}
+    }}
 
