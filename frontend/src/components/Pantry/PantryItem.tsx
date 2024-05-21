@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect, useState} from 'react';
+import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import axios from 'axios';
 
@@ -13,7 +13,6 @@ const useStyles = createUseStyles({
             boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
             height: '150px',
             margin: '15px 30px',
-
         },
     },
     gridItemContent: {
@@ -63,7 +62,7 @@ const useStyles = createUseStyles({
             backgroundColor: '#43766C',
         },
     },
-    spc:{
+    spc: {
         display: 'flex',
         gap: '10px',
         alignItems: 'center',
@@ -74,16 +73,19 @@ interface Ingredient {
     ingredient_id: number;
     name: string;
     img: string;
+    amount?: number;
+    unit?: string;
     userIngredients: null;
 }
 
 interface PantryItemProps {
     index: number;
     ingredient: Ingredient;
+    selectedButton: string;
+    onNewIngredientAdded: () => void;
 }
 
-
-const PantryItem = ({ index, ingredient }: PantryItemProps) => {
+const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }: PantryItemProps) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState('');
     const [unit, setUnit] = useState('pcs');
@@ -96,7 +98,6 @@ const PantryItem = ({ index, ingredient }: PantryItemProps) => {
             amount: parseFloat(quantity),
             unit: unit,
         };
-        console.log(data)
         const token = localStorage.getItem('access_token');
 
         axios.post('http://localhost:8080/api/user_ingredients/add', data, {
@@ -106,28 +107,34 @@ const PantryItem = ({ index, ingredient }: PantryItemProps) => {
             },
         })
             .then(response => {
-                console.log(response.data);
+                onNewIngredientAdded();
             })
             .catch(error => {
                 console.error('Error:', error);
             });
     };
+
     return (
         <div key={index} className={classes.gridItem}>
             <div className={classes.gridItemContent}>
                 <div className={classes.spc}>
-                    <img className={classes.gridItemImage} src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name}/>
+                    <img className={classes.gridItemImage} src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name} />
                     <span>{ingredient.name}</span>
+                    {ingredient.amount && ingredient.unit && (
+                        <span>{ingredient.amount} {ingredient.unit}</span>
+                    )}
                 </div>
                 <div className={classes.spc}>
-                    <form onSubmit={handleFormSubmit} className={classes.form}>
-                        <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required className={classes.input} />
-                        <select value={unit} onChange={(e) => setUnit(e.target.value)} className={classes.select}>
-                            <option value="pcs">pcs</option>
-                            <option value="grams">grams</option>
-                        </select>
-                        <button type="submit" className={classes.button}>OK</button>
-                    </form>
+                    {selectedButton === 'Available Ingredients' && (
+                        <form onSubmit={handleFormSubmit} className={classes.form}>
+                            <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required className={classes.input} />
+                            <select value={unit} onChange={(e) => setUnit(e.target.value)} className={classes.select}>
+                                <option value="pcs">pcs</option>
+                                <option value="grams">grams</option>
+                            </select>
+                            <button type="submit" className={classes.button}>OK</button>
+                        </form>
+                    )}
                 </div>
             </div>
         </div>
