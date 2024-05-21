@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
         backgroundColor: '#F8FAE5',
         fontSize: '22px',
         cursor: 'pointer',
-        width: '200px',
+        width: '400px',
         color: '#76453B',
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -28,26 +28,28 @@ const useStyles = createUseStyles({
         },
         '@media (max-width: 1080px)': {
             marginBottom: '10px',
-            width: '130px',
+            width: '240px',
         },
         '@media (max-width: 600px)': {
             marginBottom: '10px',
-            width: '80px',
-            fontSize: '16px',
+            width: '170px',
+            fontSize: '14px',
         },
 
     },
 });
 
-const SortingButtons = () => {
+interface SortingButtonsProps {
+    handleButtonClick: (buttonName: string) => void;
+}
+
+const SortingButtons = ({ handleButtonClick }: SortingButtonsProps) => {
     const classes = useStyles();
 
     return (
         <div className={classes.sortingButtonsContainer}>
-            <button className={classes.sortingButton}>All</button>
-            <button className={classes.sortingButton}>Shelf</button>
-            <button className={classes.sortingButton}>Fridge</button>
-            <button className={classes.sortingButton}>Freezer</button>
+            <button onClick={() => handleButtonClick('Available Ingredients')} className={classes.sortingButton}>Available Ingredients</button>
+            <button onClick={() => handleButtonClick('User Ingredients')} className={classes.sortingButton}>User Ingredients</button>
         </div>
     );
 };
