@@ -23,12 +23,13 @@ const useStyles = createUseStyles({
         height: '100%',
         fontSize: '25px',
         '@media (max-width: 600px)': {
-            width: '50px',
-            fontSize: '15px',
+            width: '100%',
+            fontSize: '18px',
+            gap: '10px',
             flexDirection: 'column',
+            alignItems: 'center',
             justifyContent: 'center',
-            alignItems: 'flex-start',
-        },
+        }
     },
     gridItemImage: {
         '@media (max-width: 600px)': {
@@ -66,6 +67,17 @@ const useStyles = createUseStyles({
         display: 'flex',
         gap: '10px',
         alignItems: 'center',
+    },
+    spanText: {
+        '@media (max-width: 600px)': {
+            width: '140px',
+            fontSize: '16px',
+            marginRight: '2px',
+        },
+        '@media (max-width: 1080px)': {
+            marginLeft: '10px',
+            marginRight: '10px',
+        },
     },
 });
 
@@ -119,7 +131,7 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
             <div className={classes.gridItemContent}>
                 <div className={classes.spc}>
                     <img className={classes.gridItemImage} src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name} />
-                    <span>{ingredient.name}</span>
+                    <span className={classes.spanText}>{ingredient.name}</span>
                     {ingredient.amount && ingredient.unit && (
                         <span>{ingredient.amount} {ingredient.unit}</span>
                     )}
@@ -130,7 +142,7 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
                             <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required className={classes.input} />
                             <select value={unit} onChange={(e) => setUnit(e.target.value)} className={classes.select}>
                                 <option value="pcs">pcs</option>
-                                <option value="grams">grams</option>
+                                <option value="g">g</option>
                             </select>
                             <button type="submit" className={classes.button}>OK</button>
                         </form>
