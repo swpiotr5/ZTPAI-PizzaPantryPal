@@ -17,12 +17,11 @@ public class UserIngredient {
     private String unit;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "ingredient_id", nullable = false)
-    private AvailableIngredient availableIngredient;
+    @Column(name = "ingredient_id")
+    private Integer availableIngredient;
 
     @OneToMany(mappedBy = "userIngredient")
     private Set<PizzaTemplateIngredient> pizzaTemplateIngredients;
@@ -30,7 +29,7 @@ public class UserIngredient {
     public UserIngredient() {
     }
 
-    public UserIngredient(Float amount, String unit, Users user, AvailableIngredient availableIngredient) {
+    public UserIngredient(Float amount, String unit, Users user, Integer availableIngredient) {
         this.amount = amount;
         this.unit = unit;
         this.user = user;
@@ -71,11 +70,11 @@ public class UserIngredient {
         this.user = user;
     }
 
-    public AvailableIngredient getAvailableIngredient() {
-        return availableIngredient;
+    public Integer getAvailableIngredient() {
+        return this.availableIngredient;
     }
 
-    public void setAvailableIngredient(AvailableIngredient availableIngredient) {
+    public void setAvailableIngredient(Integer availableIngredient) {
         this.availableIngredient = availableIngredient;
     }
 
