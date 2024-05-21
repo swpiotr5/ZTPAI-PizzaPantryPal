@@ -54,4 +54,15 @@ public class UserIngredientController {
             return null;
         }
     }
+
+    @GetMapping("/user")
+    public List<UserIngredient> getUserIngredients() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            Long userId = userDetails.getId();
+            return userIngredientRepository.findByUserId(userId);
+        }
+        return null;
+    }
 }
