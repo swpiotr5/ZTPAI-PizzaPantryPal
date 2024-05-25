@@ -1,3 +1,4 @@
+// PizzaMetrics.tsx
 import React, { useEffect, useState } from 'react';
 import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import { createUseStyles } from 'react-jss';
@@ -5,11 +6,11 @@ import PizzaGrid from '../components/PizzaMetrics/PizzaGrid';
 import SearchContainer from '../components/PizzaMetrics/SearchContainer';
 import axios from 'axios';
 
-// Define interfaces directly in the component file
 interface PizzaTemplateIngredient {
     availableIngredientId: number;
     amount: number;
     unit: string;
+    name: string;
 }
 
 interface PizzaTemplate {
@@ -41,6 +42,7 @@ const useStyles = createUseStyles({
 const PizzaMetrics = () => {
     const classes = useStyles();
     const [pizzaTemplates, setPizzaTemplates] = useState<PizzaTemplate[]>([]);
+    const [availableIngredients, setAvailableIngredients] = useState<any[]>([]); // Dodajemy stan do przechowywania dostępnych składników
 
     useEffect(() => {
         const fetchPizzaTemplates = async () => {
@@ -57,16 +59,30 @@ const PizzaMetrics = () => {
             }
         };
 
-        fetchPizzaTemplates();
-    }, []);
+        const fetchAvailableIngredients = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
 
+                const response = await axios.get('http://localhost:8080/api/available_ingredients', { headers });
+                setAvailableIngredients(response.data);
+            } catch (error) {
+                console.error('Error fetching available ingredients:', error);
+            }
+        };
+        fetchPizzaTemplates();
+        fetchAvailableIngredients();
+    }, []);
+    console.log(availableIngredients);
 
     return (
         <div>
             <DefaultTemplate>
                 <div className={classes.wrapper}>
                     <SearchContainer />
-                    <PizzaGrid pizzaTemplates={pizzaTemplates} />
+                    <PizzaGrid pizzaTemplates={pizzaTemplates} availableIngredients={availableIngredients} />
                 </div>
             </DefaultTemplate>
         </div>

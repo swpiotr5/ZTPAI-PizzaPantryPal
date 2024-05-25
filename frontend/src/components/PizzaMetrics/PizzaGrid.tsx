@@ -1,6 +1,8 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import PizzaGridItem from './PizzaGridItem';
+import { PizzaTemplate } from './PizzaGridItem';
+
 
 const useStyles = createUseStyles({
     gridContainer: {
@@ -38,22 +40,18 @@ const useStyles = createUseStyles({
     },
 });
 
-interface PizzaTemplate {
-    id: number;
-    name: string;
-}
-
 interface PizzaGridProps {
     pizzaTemplates: PizzaTemplate[];
+    availableIngredients: any[];
 }
 
-const PizzaGrid: React.FC<PizzaGridProps> = ({ pizzaTemplates }) => {
+const PizzaGrid: React.FC<PizzaGridProps> = ({ pizzaTemplates, availableIngredients }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.gridContainer}>
             {pizzaTemplates.map((template, index) => (
-                <PizzaGridItem key={index} template={template} />
+                <PizzaGridItem key={index} template={template} availableIngredients={availableIngredients} />
             ))}
         </div>
     );
