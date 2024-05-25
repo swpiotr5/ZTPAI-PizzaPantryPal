@@ -1,46 +1,35 @@
 package com.example.pizzapantrypal.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
-import java.util.Set;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "pizza_templates")
+@Table(name = "pizza_templates", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class PizzaTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer template_id;
+    private Integer id;
 
-    @Column(length = 50)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @SuppressWarnings("rawtypes")
-    @OneToMany(mappedBy = "pizzaTemplate")
-    private Set<PizzaTemplateIngredient> pizzaTemplateIngredients;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @OneToMany(mappedBy = "pizzaTemplate")
-    private Set<UserPizzaTemplate> userPizzaTemplates;
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private Users user;
 
-    public PizzaTemplate() {
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "template_id")
+    private List<PizzaTemplateIngredient> ingredients;
 
+    public Integer getId() {
+        return id;
     }
 
-    public PizzaTemplate(String name) {
-        this.name = name;
-    }
-    public Integer getTemplate_id() {
-        return template_id;
-    }
-
-    public void setTemplate_id(Integer template_id) {
-        this.template_id = template_id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -51,20 +40,27 @@ public class PizzaTemplate {
         this.name = name;
     }
 
-    @SuppressWarnings("rawtypes")
-    public Set<PizzaTemplateIngredient> getPizzaTemplateIngredients() {
-        return pizzaTemplateIngredients;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setPizzaTemplateIngredients(@SuppressWarnings("rawtypes") Set<PizzaTemplateIngredient> pizzaTemplateIngredients) {
-        this.pizzaTemplateIngredients = pizzaTemplateIngredients;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public Set<UserPizzaTemplate> getUserPizzaTemplates() {
-        return userPizzaTemplates;
+    public Users getUser() {
+        return user;
     }
 
-    public void setUserPizzaTemplates(Set<UserPizzaTemplate> userPizzaTemplates) {
-        this.userPizzaTemplates = userPizzaTemplates;
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public List<PizzaTemplateIngredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<PizzaTemplateIngredient> ingredients) {
+        this.ingredients = ingredients;
     }
 }

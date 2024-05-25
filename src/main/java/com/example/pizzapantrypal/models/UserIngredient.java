@@ -23,9 +23,6 @@ public class UserIngredient {
     @Column(name = "ingredient_id")
     private Integer availableIngredient;
 
-    @OneToMany(mappedBy = "userIngredient")
-    private Set<PizzaTemplateIngredient> pizzaTemplateIngredients;
-
     public UserIngredient() {
     }
 
@@ -78,11 +75,4 @@ public class UserIngredient {
         this.availableIngredient = availableIngredient;
     }
 
-    public Set<PizzaTemplateIngredient> getPizzaTemplateIngredients() {
-        return pizzaTemplateIngredients;
-    }
-
-    public void setPizzaTemplateIngredients(Set<PizzaTemplateIngredient> pizzaTemplateIngredients) {
-        this.pizzaTemplateIngredients = pizzaTemplateIngredients;
-    }
 }
