@@ -38,13 +38,22 @@ const useStyles = createUseStyles({
     },
 });
 
-const PizzaGrid = () => {
+interface PizzaTemplate {
+    id: number;
+    name: string;
+}
+
+interface PizzaGridProps {
+    pizzaTemplates: PizzaTemplate[];
+}
+
+const PizzaGrid: React.FC<PizzaGridProps> = ({ pizzaTemplates }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.gridContainer}>
-            {Array.from({ length: 20 }).map((_, index) => (
-                <PizzaGridItem key={index} index={index} />
+            {pizzaTemplates.map((template, index) => (
+                <PizzaGridItem key={index} template={template} />
             ))}
         </div>
     );

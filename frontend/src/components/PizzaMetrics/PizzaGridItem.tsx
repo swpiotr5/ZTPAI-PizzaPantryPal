@@ -2,8 +2,13 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import pizzaImg from '../../assets/pizza.png';
 
+interface PizzaTemplate {
+    id: number;
+    name: string;
+}
+
 interface PizzaGridItemProps {
-    index: number;
+    template: PizzaTemplate;
 }
 
 const useStyles = createUseStyles({
@@ -40,52 +45,16 @@ const useStyles = createUseStyles({
         width: '50%',
         height: 'auto',
     },
-    quantityInput: {
-        width: '35%',
-        padding: '5px 10px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        fontSize: '16px',
-        transition: 'all 0.3s ease',
-        '&:focus': {
-            outline: 'none',
-            border: '1px solid #43766C',
-        },
-    },
-    okButton: {
-        backgroundColor: '#43766C',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        padding: '5px 10px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        transition: 'background-color 0.3s ease',
-        '&:hover': {
-            backgroundColor: '#335A4C',
-        },
-    },
-    quantityContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        marginTop: '10px',
-    }
 });
 
-const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ index }) => {
+const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template }) => {
     const classes = useStyles();
 
     return (
         <div className={classes.gridItem}>
             <div className={classes.gridItemContent}>
-                <span className={classes.pizzaName}>Pizza {index + 1}</span>
+                <span className={classes.pizzaName}>{template.name}</span>
                 <img src={pizzaImg} alt="Pizza" className={classes.pizzaImage}/>
-                <div className={classes.quantityContainer}>
-                    <input type="number" className={classes.quantityInput} placeholder="Quantity"/> {/* Dodane */}
-                    <input type="text" className={classes.quantityInput} placeholder="Units"/> {/* Dodane */}
-                    <button className={classes.okButton}>OK</button>
-                </div>
             </div>
         </div>
     );

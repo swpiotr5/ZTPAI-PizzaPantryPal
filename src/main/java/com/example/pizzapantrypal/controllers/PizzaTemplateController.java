@@ -8,6 +8,7 @@ import com.example.pizzapantrypal.models.PizzaTemplate;
 import com.example.pizzapantrypal.repository.PizzaTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
@@ -74,4 +75,29 @@ public class PizzaTemplateController {
             throw new RuntimeException("Principal is not of type UserDetailsImpl");
         }
     }
+
+    @GetMapping
+    public ResponseEntity<List<PizzaTemplate>> getAllPizzaTemplates() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        Long currentUserId = null;
+
+        if (principal instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+            currentUserId = userDetails.getId();
+        }
+
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        List<PizzaTemplate> pizzaTemplates = pizzaTemplateRepository.findByUserId(currentUserId);
+        for (PizzaTemplate template : pizzaTemplates) {
+            List<PizzaTemplateIngredient> ingredients = pizzaTemplateIngredientRepository.findByTemplateId(template.getId());
+            template.setIngredients(ingredients);
+        }
+
+        return ResponseEntity.ok(pizzaTemplates);
+    }
+
 }
