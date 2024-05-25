@@ -10,7 +10,7 @@ interface Ingredient {
 
 interface ProductContainerProps {
     ingredient: Ingredient;
-    onAdd: (ingredientId: number, quantity: string, unit: string) => void;
+    onAdd: (availableIngredientId: number, quantity: string, unit: string) => void;
 }
 
 const useStyles = createUseStyles({
@@ -107,6 +107,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({ ingredient, onAdd }
     const handleAdd = () => {
         if (quantity && unit) {
             onAdd(ingredient.ingredient_id, quantity, unit);
+            console.log(ingredient.ingredient_id, quantity, unit);
             setQuantity('');
             setUnit('g');
         }

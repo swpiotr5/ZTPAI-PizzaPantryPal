@@ -175,7 +175,7 @@ const PizzaCreator = () => {
         const payload = {
             name: pizzaName,
             ingredients: Object.entries<{ amount: string, unit: string }>(selectedIngredients).map(([ingredientId, { amount, unit }]) => ({
-                ingredientId,
+                availableIngredientId: parseInt(ingredientId),
                 amount,
                 unit,
             })),
@@ -190,7 +190,6 @@ const PizzaCreator = () => {
                 console.error('Error creating pizza template:', error);
             });
     };
-
 
 
     const filteredIngredients = searchTerm === '' ? [] : availableIngredients.filter((ingredient: any) =>
