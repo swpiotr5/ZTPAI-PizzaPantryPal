@@ -100,7 +100,7 @@ interface PantryItemProps {
 const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }: PantryItemProps) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState('');
-    const [unit, setUnit] = useState('pcs');
+    const [unit, setUnit] = useState('g');
 
     const handleFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -141,7 +141,6 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
                         <form onSubmit={handleFormSubmit} className={classes.form}>
                             <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required className={classes.input} />
                             <select value={unit} onChange={(e) => setUnit(e.target.value)} className={classes.select}>
-                                <option value="pcs">pcs</option>
                                 <option value="g">g</option>
                             </select>
                             <button type="submit" className={classes.button}>OK</button>

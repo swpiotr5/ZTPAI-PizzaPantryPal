@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import { keyframes } from 'styled-components';
 
 interface Ingredient {
     ingredient_id: number;
@@ -15,6 +16,7 @@ interface ProductContainerProps {
 
 const useStyles = createUseStyles({
     productContainer: {
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -29,6 +31,10 @@ const useStyles = createUseStyles({
         borderRadius: '10px',
         marginBottom: '10px',
         marginTop: '70px',
+        transition: 'transform 0.3s ease-in-out',
+        '&:hover': {
+            transform: 'scale(1.05)',
+        },
     },
     image: {
         width: '120px',
@@ -97,24 +103,44 @@ const useStyles = createUseStyles({
     wrapperBottom: {
         display: 'flex',
     },
+    successAnimation: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        fontSize: '20px',
+        color: 'green',
+        opacity: 0,
+        animation: '$fadeInOut 1.5s ease-out',
+    },
+    '@keyframes fadeInOut': {
+        '0%': { opacity: 1 },
+        '50%': { opacity: 1 },
+        '100%': { opacity: 0 },
+    },
 });
 
 const ProductContainer: React.FC<ProductContainerProps> = ({ ingredient, onAdd }) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState<string>('');
     const [unit, setUnit] = useState<string>('g');
+    const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
     const handleAdd = () => {
         if (quantity && unit) {
             onAdd(ingredient.ingredient_id, quantity, unit);
-            console.log(ingredient.ingredient_id, quantity, unit);
             setQuantity('');
             setUnit('g');
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 1500);
         }
     };
 
     return (
         <div className={classes.productContainer}>
+            {showSuccess && <div className={classes.successAnimation}>Added!</div>}
             <div className={classes.wrapperUpper}>
                 <div className={classes.image}>
                     <img src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name}/>
