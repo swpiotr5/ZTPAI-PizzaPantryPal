@@ -138,8 +138,33 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
     };
 
     const handleSoldSubmit = () => {
-        alert(`Sold ${soldAmount} pizzas of template ${template.name}`);
+        const token = localStorage.getItem('access_token');
+        const headers = {
+            Authorization: `Bearer ${token}`,
+        };
+
+        const payload = {
+            templateId: template.id,
+            soldAmount,
+        };
+
+        axios.post('http://localhost:8080/api/user_ingredients/update', payload, { headers })
+            .then(response => {
+                alert(`Updated ingredients after selling ${soldAmount} pizzas of template ${template.name}`);
+                // Refresh user ingredients after update
+                axios.get('http://localhost:8080/api/user_ingredients/user', { headers })
+                    .then(response => {
+                        setUserIngredients(response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     };
+
 
     return (
         <div className={classes.gridItem}>
