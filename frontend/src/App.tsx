@@ -6,6 +6,8 @@ import Pantry from "./container/Pantry";
 import PizzaCreator from "./container/PizzaCreator";
 import PizzaMetrics from "./container/PizzaMetrics";
 import Profile from "./container/Profile";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
     const [isAuth, setIsAuth] = useState(false);
@@ -36,6 +38,7 @@ const App = () => {
             <Route path="/pizzametrics" element={isAuth ? <PizzaMetrics /> : <Login setIsAuth={setIsAuth}/>} />
             <Route path="/pizzacreator" element={isAuth ? <PizzaCreator /> : <Login setIsAuth={setIsAuth}/>} />
         </Routes>
+        <ToastContainer />
     </Router>
 );
 }
