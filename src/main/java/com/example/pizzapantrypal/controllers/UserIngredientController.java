@@ -9,6 +9,8 @@ import com.example.pizzapantrypal.repository.UserIngredientRepository;
 import com.example.pizzapantrypal.repository.UserRepository;
 import com.example.pizzapantrypal.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/user_ingredients")
 public class UserIngredientController {
-
 
     @Autowired
     private UserIngredientRepository userIngredientRepository;
@@ -73,8 +74,9 @@ public class UserIngredientController {
         }
         return null;
     }
+
     @PostMapping("/update")
-    public void updateUserIngredientsAfterSale(@RequestBody SaleRequest saleRequest) {
+    public ResponseEntity<String> updateUserIngredientsAfterSale(@RequestBody SaleRequest saleRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -84,6 +86,27 @@ public class UserIngredientController {
                 PizzaTemplate pizzaTemplate = optionalTemplate.get();
                 List<UserIngredient> userIngredients = userIngredientRepository.findByUserId(userId);
 
+                // Check if user has enough ingredients
+                for (PizzaTemplateIngredient templateIngredient : pizzaTemplate.getIngredients()) {
+                    boolean hasEnough = false;
+                    for (UserIngredient userIngredient : userIngredients) {
+                        if (userIngredient.getAvailableIngredient().equals(templateIngredient.getAvailableIngredientId())) {
+                            float amountToSubtract = Float.parseFloat(templateIngredient.getAmount()) * saleRequest.getSoldAmount();
+                            if (userIngredient.getAmount() >= amountToSubtract) {
+                                hasEnough = true;
+                            } else {
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body("Not enough ingredients. Check your pantry.");
+                            }
+                        }
+                    }
+                    if (!hasEnough) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                .body("Not enough ingredients. Check your pantry.");
+                    }
+                }
+
+                // Update user ingredients
                 for (PizzaTemplateIngredient templateIngredient : pizzaTemplate.getIngredients()) {
                     for (UserIngredient userIngredient : userIngredients) {
                         if (userIngredient.getAvailableIngredient().equals(templateIngredient.getAvailableIngredientId())) {
@@ -94,8 +117,12 @@ public class UserIngredientController {
                         }
                     }
                 }
+                return ResponseEntity.ok("Ingredients updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Template not found");
             }
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 }
 

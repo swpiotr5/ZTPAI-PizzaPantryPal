@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import pizzaImg from '../../assets/pizza.png';
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 interface PizzaTemplateIngredient {
     availableIngredientId: number;
@@ -150,7 +153,7 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
 
         axios.post('http://localhost:8080/api/user_ingredients/update', payload, { headers })
             .then(response => {
-                alert(`Updated ingredients after selling ${soldAmount} pizzas of template ${template.name}`);
+                toast.success(`Updated ingredients after selling ${soldAmount} pizzas of template ${template.name}`);
                 // Refresh user ingredients after update
                 axios.get('http://localhost:8080/api/user_ingredients/user', { headers })
                     .then(response => {
@@ -161,9 +164,15 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
                     });
             })
             .catch(error => {
-                console.error('Error:', error);
+                if (error.response && error.response.status === 400) {
+                    toast.error(`Operation failed: ${error.response.data}`);
+                } else {
+                    console.error('Error:', error);
+                }
             });
     };
+
+
 
 
     return (
