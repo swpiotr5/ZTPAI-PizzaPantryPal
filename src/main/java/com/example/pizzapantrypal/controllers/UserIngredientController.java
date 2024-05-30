@@ -112,7 +112,13 @@ public class UserIngredientController {
                         if (userIngredient.getAvailableIngredient().equals(templateIngredient.getAvailableIngredientId())) {
                             float amountToSubtract = Float.parseFloat(templateIngredient.getAmount()) * saleRequest.getSoldAmount();
                             userIngredient.setAmount(userIngredient.getAmount() - amountToSubtract);
-                            userIngredientRepository.save(userIngredient);
+
+                            // Check if the ingredient amount is 0 or less after subtraction
+                            if (userIngredient.getAmount() <= 0) {
+                                userIngredientRepository.delete(userIngredient);
+                            } else {
+                                userIngredientRepository.save(userIngredient);
+                            }
                             break;
                         }
                     }
@@ -124,6 +130,7 @@ public class UserIngredientController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
+
 }
 
 class SaleRequest {
