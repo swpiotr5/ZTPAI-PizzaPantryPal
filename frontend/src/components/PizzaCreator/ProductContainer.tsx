@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { keyframes } from 'styled-components';
+import { Snackbar, Alert, Portal } from '@mui/material';
+import { SnackbarCloseReason } from '@mui/material/Snackbar';
 
 interface Ingredient {
     ingredient_id: number;
@@ -30,7 +31,7 @@ const useStyles = createUseStyles({
         color: '#000',
         borderRadius: '10px',
         marginBottom: '10px',
-        marginTop: '70px',
+        marginTop: '10px',
         transition: 'transform 0.3s ease-in-out',
         '&:hover': {
             transform: 'scale(1.05)',
@@ -61,7 +62,6 @@ const useStyles = createUseStyles({
     productInputWrapper: {
         display: 'flex',
         alignItems: 'center',
-
     },
     recipeText: {
         fontSize: '16px',
@@ -103,28 +103,13 @@ const useStyles = createUseStyles({
     wrapperBottom: {
         display: 'flex',
     },
-    successAnimation: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        fontSize: '20px',
-        color: 'green',
-        opacity: 0,
-        animation: '$fadeInOut 1.5s ease-out',
-    },
-    '@keyframes fadeInOut': {
-        '0%': { opacity: 1 },
-        '50%': { opacity: 1 },
-        '100%': { opacity: 0 },
-    },
 });
 
 const ProductContainer: React.FC<ProductContainerProps> = ({ ingredient, onAdd }) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState<string>('');
     const [unit, setUnit] = useState<string>('g');
-    const [showSuccess, setShowSuccess] = useState<boolean>(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handleAdd = () => {
         if (quantity && unit) {
@@ -132,18 +117,28 @@ const ProductContainer: React.FC<ProductContainerProps> = ({ ingredient, onAdd }
             setQuantity('');
             setUnit('g');
             setShowSuccess(true);
-            setTimeout(() => {
-                setShowSuccess(false);
-            }, 1500);
         }
+    };
+
+    const handleCloseSnackbar = (event: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setShowSuccess(false);
     };
 
     return (
         <div className={classes.productContainer}>
-            {showSuccess && <div className={classes.successAnimation}>Added!</div>}
+            <Portal>
+                <Snackbar open={showSuccess} autoHideDuration={2000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleCloseSnackbar}>
+                    <Alert onClose={handleCloseSnackbar} severity="success" style={{ backgroundColor: '#4caf50', color: '#fff' }}>
+                        Ingredient added successfully!
+                    </Alert>
+                </Snackbar>
+            </Portal>
             <div className={classes.wrapperUpper}>
                 <div className={classes.image}>
-                    <img src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name}/>
+                    <img src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name} />
                 </div>
                 <div className={classes.info}>
                     <div className={classes.productName}>{ingredient.name}</div>
@@ -168,6 +163,5 @@ const ProductContainer: React.FC<ProductContainerProps> = ({ ingredient, onAdd }
         </div>
     );
 };
-
 
 export default ProductContainer;

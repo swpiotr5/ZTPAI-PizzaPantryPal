@@ -17,6 +17,7 @@ interface PizzaTemplate {
     id: number;
     name: string;
     ingredients: PizzaTemplateIngredient[];
+    onTemplateDeleted: () => void;
 }
 
 const useStyles = createUseStyles({
@@ -43,7 +44,7 @@ const PizzaMetrics = () => {
     const classes = useStyles();
     const [pizzaTemplates, setPizzaTemplates] = useState<PizzaTemplate[]>([]);
     const [availableIngredients, setAvailableIngredients] = useState<any[]>([]); // Dodajemy stan do przechowywania dostępnych składników
-
+    const [refresh, setRefresh] = useState(false);
     useEffect(() => {
         const fetchPizzaTemplates = async () => {
             try {
@@ -74,15 +75,18 @@ const PizzaMetrics = () => {
         };
         fetchPizzaTemplates();
         fetchAvailableIngredients();
-    }, []);
-    console.log(availableIngredients);
+    }, [refresh]);
+
+    const handleTemplateDeleted = () => {
+        setRefresh(!refresh);
+    }
 
     return (
         <div>
             <DefaultTemplate>
                 <div className={classes.wrapper}>
                     <SearchContainer />
-                    <PizzaGrid pizzaTemplates={pizzaTemplates} availableIngredients={availableIngredients} />
+                    <PizzaGrid pizzaTemplates={pizzaTemplates} availableIngredients={availableIngredients} onTemplateDeleted={handleTemplateDeleted}/>
                 </div>
             </DefaultTemplate>
         </div>

@@ -81,7 +81,7 @@ const useStyles = createUseStyles({
         position: 'relative',
         width: '90%',
         borderRadius: '15px',
-        margin: '20px auto 20px',
+        margin: '10px auto 10px',
         padding: '10px',
         height: '100%',
         display: 'flex',
@@ -94,7 +94,6 @@ const useStyles = createUseStyles({
         overflow: 'auto',
     },
     submitButton: {
-        position: 'absolute',
         bottom: '20px',
         backgroundColor: '#76453B',
         color: '#F8FAE5',

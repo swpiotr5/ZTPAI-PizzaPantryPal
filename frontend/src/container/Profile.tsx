@@ -20,6 +20,7 @@ const useStyles = createUseStyles({
         justifyContent: 'flex-start',
         width: '70%',
         height: 'auto',
+        maxHeight: '90vh',
         maxWidth: '1500px',
         margin: 'auto',
         overflow: 'auto',

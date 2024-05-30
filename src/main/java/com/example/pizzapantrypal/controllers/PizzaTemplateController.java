@@ -6,10 +6,13 @@ import com.example.pizzapantrypal.repository.UserRepository;
 import com.example.pizzapantrypal.models.Users;
 import com.example.pizzapantrypal.models.PizzaTemplate;
 import com.example.pizzapantrypal.repository.PizzaTemplateRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +26,8 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api/pizza_templates")
 public class PizzaTemplateController {
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private static final Logger logger = LoggerFactory.getLogger(PizzaTemplateController.class);
 
     @Autowired
@@ -98,6 +102,29 @@ public class PizzaTemplateController {
         }
 
         return ResponseEntity.ok(pizzaTemplates);
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePizzaTemplate(@PathVariable Long id) {
+        try {
+            if (!pizzaTemplateRepository.existsById(Math.toIntExact(id))) {
+                return ResponseEntity.notFound().build();
+            }
+
+            entityManager.createQuery("DELETE FROM PizzaTemplateIngredient pt WHERE pt.templateId = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+
+            entityManager.createQuery("DELETE FROM PizzaTemplate pt WHERE pt.id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting pizza template with id: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete pizza template");
+        }
     }
 
 }

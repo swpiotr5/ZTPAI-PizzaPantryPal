@@ -4,6 +4,7 @@ import pizzaImg from '../../assets/pizza.png';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {ManageUsersButton} from "../Profile/ManageUsersButton";
 
 
 interface PizzaTemplateIngredient {
@@ -22,6 +23,7 @@ export interface PizzaTemplate {
 interface PizzaGridItemProps {
     template: PizzaTemplate;
     availableIngredients: any[];
+    onTemplateDeleted: () => void;
 }
 
 const useStyles = createUseStyles({
@@ -109,12 +111,36 @@ const useStyles = createUseStyles({
             backgroundColor: '#45a049',
         },
     },
+    deleteButton: {
+        padding: '8px 16px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        border: 'none',
+        backgroundColor: '#f44336',
+        marginTop: '20px',
+        color: 'white',
+        transition: 'background-color 0.3s ease',
+        '&:hover': {
+            backgroundColor: '#d32f2f',
+        },
+    },
 });
 
-const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngredients }) => {
+export interface User {
+    username: string;
+    email: string;
+    roles: { name: string }[];
+}
+interface Role {
+    name: string;
+}
+
+const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngredients , onTemplateDeleted}) => {
     const classes = useStyles();
     const [showIngredients, setShowIngredients] = useState(false);
     const [userIngredients, setUserIngredients] = useState<any[]>([]);
+    const [user, setUser] = useState<User | null>(null);
     const [soldAmount, setSoldAmount] = useState(0);
 
     useEffect(() => {
@@ -172,7 +198,53 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
             });
     };
 
+    const handleDeletePizza = () => {
+        const token = localStorage.getItem('access_token');
+        const headers = {
+            Authorization: `Bearer ${token}`,
+        };
+        console.log('Deleting pizza template:', template);
+        axios.delete(`http://localhost:8080/api/pizza_templates/${template.id}`, { headers })
+            .then(response => {
+                toast.success(`Deleted pizza template ${template.name}`);
+                onTemplateDeleted();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toast.error(`Failed to delete pizza template ${template.name}`);
+            });
+    };
 
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get('http://localhost:8080/api/user/current', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                let userData = response.data;
+                if (userData) {
+                    userData.roles = userData.roles.map((role: Role) => {
+                        if (role.name === 'ROLE_MANAGER') {
+                            return { name: 'manager' };
+                        } else if (role.name === 'ROLE_USER') {
+                            return { name: 'user' };
+                        } else {
+                            return role;
+                        }
+                    });
+                }
+                setUser(userData);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
 
     return (
@@ -191,7 +263,8 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
 
                             if (matchedIngredient) {
                                 return (
-                                    <li key={index} className={`${classes.ingredientListItem} ${!isAvailable && classes.unavailableIngredient}`}>
+                                    <li key={index}
+                                        className={`${classes.ingredientListItem} ${!isAvailable && classes.unavailableIngredient}`}>
                                         {ingredient.amount} {ingredient.unit} - {matchedIngredient.name}
                                     </li>
                                 );
@@ -212,6 +285,9 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
                     />
                     <button onClick={handleSoldSubmit} className={classes.soldButton}>OK</button>
                 </div>
+                {user && user.roles[0].name === 'manager' && (
+                    <button onClick={handleDeletePizza} className={classes.deleteButton}>Delete Pizza</button>
+                )}
             </div>
         </div>
     );

@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PizzaTemplateIngredientRepository extends JpaRepository<PizzaTemplateIngredient, Integer> {
     List<PizzaTemplateIngredient> findByTemplateId(Integer id);
+
+    void deleteByTemplateId(Long id);
 }

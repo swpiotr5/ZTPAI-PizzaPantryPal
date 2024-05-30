@@ -38,7 +38,18 @@ const App = () => {
             <Route path="/pizzametrics" element={isAuth ? <PizzaMetrics /> : <Login setIsAuth={setIsAuth}/>} />
             <Route path="/pizzacreator" element={isAuth ? <PizzaCreator /> : <Login setIsAuth={setIsAuth}/>} />
         </Routes>
-        <ToastContainer />
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            containerId={undefined}
+        />
     </Router>
 );
 }
