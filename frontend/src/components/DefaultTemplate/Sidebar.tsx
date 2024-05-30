@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import pizzaLogo from '../../assets/pizzalogo.png';
 import NavigationItem from './NavigationItem';
 import { FaUser, FaStore, FaBalanceScale, FaPizzaSlice } from 'react-icons/fa';
-
+import axios from 'axios';
 
 const useStyles = createUseStyles({
     sidebar: {
@@ -66,9 +66,50 @@ const useStyles = createUseStyles({
     }),
 });
 
+interface User {
+    username: string;
+    email: string;
+    roles: { name: string }[];
+}
+
+interface Role {
+    name: string;
+}
+
 const Sidebar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
     const classes = useStyles(isOpen);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get('http://localhost:8080/api/user/current', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                let userData = response.data;
+                if (userData) {
+                    userData.roles = userData.roles.map((role: Role) => {
+                        if (role.name === 'ROLE_MANAGER') {
+                            return { name: 'manager' };
+                        } else if (role.name === 'ROLE_USER') {
+                            return { name: 'user' };
+                        } else {
+                            return role;
+                        }
+                    });
+                }
+                setUser(userData);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     return (
         <div className={`${classes.sidebar} ${isOpen ? 'open' : ''}`}>
@@ -79,10 +120,10 @@ const Sidebar: React.FC = () => {
             <div className={`${classes.navigation} ${isOpen ? 'open' : ''}`}>
                 <NavigationItem to="/profile" label={<><FaUser style={{marginRight: '10px'}}/> Profile</>}/>
                 <NavigationItem to="/pantry" label={<><FaStore style={{marginRight: '10px'}}/> Pantry</>}/>
-                <NavigationItem to="/pizzametrics"
-                                label={<><FaBalanceScale style={{marginRight: '10px'}}/> PizzaMetrics</>}/>
-                <NavigationItem to="/pizzacreator"
-                                label={<><FaPizzaSlice style={{marginRight: '10px'}}/> PizzaCreator</>}/>
+                <NavigationItem to="/pizzametrics" label={<><FaBalanceScale style={{marginRight: '10px'}}/> PizzaMetrics</>}/>
+                {user && user.roles.some(role => role.name === 'manager') && (
+                    <NavigationItem to="/pizzacreator" label={<><FaPizzaSlice style={{marginRight: '10px'}}/> PizzaCreator</>}/>
+                )}
             </div>
             <div className={classes.footer}>
                 © Pizza Pantry Pal 2024. All rights reserved.
