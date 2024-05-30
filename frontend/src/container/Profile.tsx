@@ -19,7 +19,8 @@ const useStyles = createUseStyles({
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '70%',
-        height: '90vh',
+        height: 'auto',
+        maxHeight: '90vh',
         maxWidth: '1500px',
         margin: 'auto',
         overflow: 'auto',
@@ -31,6 +32,7 @@ const useStyles = createUseStyles({
             marginTop: '80px',
             borderRadius: '20px',
             width: '100%',
+            height: '100%',
             backgroundColor:  '#F8FAE5',
             '&::-webkit-scrollbar': {
                 display: 'none',

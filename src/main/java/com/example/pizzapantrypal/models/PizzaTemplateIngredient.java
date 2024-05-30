@@ -1,63 +1,64 @@
 package com.example.pizzapantrypal.models;
 
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import java.util.Set;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "pizza_template_ingredients")
+@Table(name = "pizza_template_ingredients", uniqueConstraints = @UniqueConstraint(columnNames = {"template_id", "available_ingredient_id"}))
 public class PizzaTemplateIngredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer ingredient_id;
+    private Integer id;
 
-    @Column(length = 50)
-    private String name;
+    @Column(name = "template_id", nullable = false)
 
-    @ManyToOne
-    @JoinColumn(name = "template_id")
-    private PizzaTemplate pizzaTemplate;
+    private Integer templateId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_ingredient_id")
-    private UserIngredient userIngredient;
+    @Column(name = "available_ingredient_id", nullable = false)
+    private Integer availableIngredientId;
 
-    public PizzaTemplateIngredient() {
+    @Column(nullable = false)
+    private String amount;
 
+    @Column(nullable = false)
+    private String unit;
+
+    public Integer getId() {
+        return id;
     }
 
-    public PizzaTemplateIngredient(String name) {
-        this.name = name;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Integer getIngredient_id() {
-        return ingredient_id;
+    public Integer getTemplateId() {
+        return templateId;
     }
 
-    public void setIngredient_id(Integer ingredient_id) {
-        this.ingredient_id = ingredient_id;
+    public void setTemplateId(Integer templateId) {
+        this.templateId = templateId;
     }
 
-    public PizzaTemplate getPizzaTemplate() {
-        return pizzaTemplate;
+    public Integer getAvailableIngredientId() {
+        return availableIngredientId;
     }
 
-    public void setPizzaTemplate(PizzaTemplate pizzaTemplate) {
-        this.pizzaTemplate = pizzaTemplate;
+    public void setAvailableIngredientId(Integer availableIngredientId) {
+        this.availableIngredientId = availableIngredientId;
     }
 
-    public UserIngredient getUserIngredient() {
-        return userIngredient;
+    public String getAmount() {
+        return amount;
     }
 
-    public void setUserIngredient(UserIngredient userIngredient) {
-        this.userIngredient = userIngredient;
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { createUseStyles } from 'react-jss';
 
@@ -9,10 +9,7 @@ const useStyles = createUseStyles({
         marginBottom: '30px',
         position: 'relative',
         width: '100%',
-        '@media (max-width: 600px)': {
-            width: '90%',
-            marginTop: '20px'
-        },
+
     },
     searchIconContainer: {
         position: 'absolute',
@@ -22,21 +19,18 @@ const useStyles = createUseStyles({
         padding: '10px 30px 10px 20px',
         borderRadius: '5px',
         border: '1px solid #ccc',
+        backgroundColor: '#76453B',
         flex: '1',
-        backgroundColor:  '#76453B',
         fontSize: '20px',
         transition: 'all 0.3s ease',
-        '&:hover': {
-            transform: 'scale(1.01)',
-        },
-        color: '#F8FAE5',
+        color: '#ccc',
         '&::placeholder': {
-            color: '#F8FAE5',
+            color: '#ccc',
         },
     },
     searchIcon: {
         fontSize: '20px',
-        color: '#F8FAE5',
+        color: '#ccc',
     },
 });
 
@@ -47,6 +41,10 @@ interface IngredientsSearchBarProps {
 const IngredientsSearchBar: React.FC<IngredientsSearchBarProps> = ({ onSearch }) => {
     const classes = useStyles();
 
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        onSearch(e.target.value);
+    };
+
     return (
         <div className={classes.searchContainer}>
             <div className={classes.searchIconContainer}>
@@ -56,7 +54,7 @@ const IngredientsSearchBar: React.FC<IngredientsSearchBarProps> = ({ onSearch })
                 type="text"
                 placeholder="Search for ingredients..."
                 className={classes.searchInput}
-                onChange={(e) => onSearch(e.target.value)}
+                onChange={handleInputChange}
             />
         </div>
     );

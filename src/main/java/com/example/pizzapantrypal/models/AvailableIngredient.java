@@ -29,6 +29,10 @@ public class AvailableIngredient {
     @OneToMany(mappedBy = "availableIngredient")
     private Set<UserIngredient> userIngredients;
 
+//    @OneToMany(mappedBy = "availableIngredient")
+//    private Set<PizzaTemplateIngredient> pizzaTemplateIngredients;
+
+
     public Integer getIngredient_id() {
         return ingredient_id;
     }

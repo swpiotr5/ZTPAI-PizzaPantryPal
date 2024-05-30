@@ -1,6 +1,8 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import PizzaGridItem from './PizzaGridItem';
+import { PizzaTemplate } from './PizzaGridItem';
+
 
 const useStyles = createUseStyles({
     gridContainer: {
@@ -38,13 +40,19 @@ const useStyles = createUseStyles({
     },
 });
 
-const PizzaGrid = () => {
+interface PizzaGridProps {
+    pizzaTemplates: PizzaTemplate[];
+    availableIngredients: any[];
+    onTemplateDeleted: () => void;
+}
+
+const PizzaGrid: React.FC<PizzaGridProps> = ({ pizzaTemplates, availableIngredients, onTemplateDeleted}) => {
     const classes = useStyles();
 
     return (
         <div className={classes.gridContainer}>
-            {Array.from({ length: 20 }).map((_, index) => (
-                <PizzaGridItem key={index} index={index} />
+            {pizzaTemplates.map((template, index) => (
+                <PizzaGridItem key={index} template={template} availableIngredients={availableIngredients} onTemplateDeleted={onTemplateDeleted}/>
             ))}
         </div>
     );

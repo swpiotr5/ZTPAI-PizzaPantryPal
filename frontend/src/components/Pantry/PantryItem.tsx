@@ -1,13 +1,14 @@
 import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const useStyles = createUseStyles({
     gridItem: {
         boxSizing: 'border-box',
         height: '150px',
         margin: '0 30px 30px 0',
-        backgroundColor:  '#F8FAE5',
+        backgroundColor: '#F8FAE5',
         borderRadius: '15px',
         '@media (max-width: 600px)': {
             boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
@@ -23,12 +24,13 @@ const useStyles = createUseStyles({
         height: '100%',
         fontSize: '25px',
         '@media (max-width: 600px)': {
-            width: '50px',
-            fontSize: '15px',
+            width: '100%',
+            fontSize: '18px',
+            gap: '10px',
             flexDirection: 'column',
+            alignItems: 'center',
             justifyContent: 'center',
-            alignItems: 'flex-start',
-        },
+        }
     },
     gridItemImage: {
         '@media (max-width: 600px)': {
@@ -67,6 +69,17 @@ const useStyles = createUseStyles({
         gap: '10px',
         alignItems: 'center',
     },
+    spanText: {
+        '@media (max-width: 600px)': {
+            width: '140px',
+            fontSize: '16px',
+            marginRight: '2px',
+        },
+        '@media (max-width: 1080px)': {
+            marginLeft: '10px',
+            marginRight: '10px',
+        },
+    },
 });
 
 interface Ingredient {
@@ -88,7 +101,7 @@ interface PantryItemProps {
 const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }: PantryItemProps) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState('');
-    const [unit, setUnit] = useState('pcs');
+    const [unit, setUnit] = useState('g');
 
     const handleFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -107,11 +120,14 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
             },
         })
             .then(response => {
+                toast.success(response.data);
                 onNewIngredientAdded();
             })
             .catch(error => {
+                toast.error('Error adding or updating ingredient');
                 console.error('Error:', error);
             });
+
     };
 
     return (
@@ -119,7 +135,7 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
             <div className={classes.gridItemContent}>
                 <div className={classes.spc}>
                     <img className={classes.gridItemImage} src={process.env.PUBLIC_URL + ingredient.img} alt={ingredient.name} />
-                    <span>{ingredient.name}</span>
+                    <span className={classes.spanText}>{ingredient.name}</span>
                     {ingredient.amount && ingredient.unit && (
                         <span>{ingredient.amount} {ingredient.unit}</span>
                     )}
@@ -129,8 +145,7 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
                         <form onSubmit={handleFormSubmit} className={classes.form}>
                             <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required className={classes.input} />
                             <select value={unit} onChange={(e) => setUnit(e.target.value)} className={classes.select}>
-                                <option value="pcs">pcs</option>
-                                <option value="grams">grams</option>
+                                <option value="g">g</option>
                             </select>
                             <button type="submit" className={classes.button}>OK</button>
                         </form>
