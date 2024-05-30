@@ -1,13 +1,14 @@
 import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const useStyles = createUseStyles({
     gridItem: {
         boxSizing: 'border-box',
         height: '150px',
         margin: '0 30px 30px 0',
-        backgroundColor:  '#F8FAE5',
+        backgroundColor: '#F8FAE5',
         borderRadius: '15px',
         '@media (max-width: 600px)': {
             boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
@@ -119,11 +120,14 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
             },
         })
             .then(response => {
+                toast.success(response.data);
                 onNewIngredientAdded();
             })
             .catch(error => {
+                toast.error('Error adding or updating ingredient');
                 console.error('Error:', error);
             });
+
     };
 
     return (

@@ -51,18 +51,32 @@ public class UserIngredientController {
     }
 
     @PostMapping("/add")
-    public UserIngredient addUserIngredient(@RequestBody UserIngredient userIngredient) {
+    public ResponseEntity<String> addUserIngredient(@RequestBody UserIngredient userIngredient) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof UserDetailsImpl) {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             Users currentUser = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            if (currentUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
             userIngredient.setUser(currentUser);
-            return userIngredientRepository.save(userIngredient);
+            Optional<UserIngredient> existingIngredient = userIngredientRepository.findByUserIdAndAvailableIngredient(currentUser.getId(), userIngredient.getAvailableIngredient());
+
+            if (existingIngredient.isPresent()) {
+                UserIngredient ingredientToUpdate = existingIngredient.get();
+                ingredientToUpdate.setAmount(ingredientToUpdate.getAmount() + userIngredient.getAmount());
+                userIngredientRepository.save(ingredientToUpdate);
+                return ResponseEntity.ok("Existing ingredient updated with " + userIngredient.getAmount() + "g");
+            } else {
+                userIngredientRepository.save(userIngredient);
+                return ResponseEntity.ok("New ingredient added with " + userIngredient.getAmount() + "g");
+            }
         } else {
-            // log error or throw exception
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
     }
+
 
     @GetMapping("/user")
     public List<UserIngredient> getUserIngredients() {
