@@ -4,8 +4,7 @@ import pizzaImg from '../../assets/pizza.png';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {ManageUsersButton} from "../Profile/ManageUsersButton";
-
+import Modal from 'react-modal';
 
 interface PizzaTemplateIngredient {
     availableIngredientId: number;
@@ -125,6 +124,49 @@ const useStyles = createUseStyles({
             backgroundColor: '#d32f2f',
         },
     },
+    modalContent: {
+        position: 'absolute',
+        width: '80%',
+        maxWidth: '400px',
+        top: '50%',
+        left: '50%',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: '#FFF',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
+        textAlign: 'center',
+    },
+    modalOverlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalButtons: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: '20px',
+    },
+    modalButton: {
+        padding: '8px 16px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        border: 'none',
+    },
+    confirmButton: {
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#45a049',
+        },
+    },
+    cancelButton: {
+        backgroundColor: '#f44336',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#d32f2f',
+        },
+    },
 });
 
 export interface User {
@@ -142,6 +184,7 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
     const [userIngredients, setUserIngredients] = useState<any[]>([]);
     const [user, setUser] = useState<User | null>(null);
     const [soldAmount, setSoldAmount] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -199,6 +242,10 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
     };
 
     const handleDeletePizza = () => {
+        setIsModalOpen(true);
+    };
+
+    const confirmDeletePizza = () => {
         const token = localStorage.getItem('access_token');
         const headers = {
             Authorization: `Bearer ${token}`,
@@ -213,8 +260,12 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
                 console.error('Error:', error);
                 toast.error(`Failed to delete pizza template ${template.name}`);
             });
+        setIsModalOpen(false);
     };
 
+    const cancelDeletePizza = () => {
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -245,7 +296,6 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
 
         fetchUser();
     }, []);
-
 
     return (
         <div className={classes.gridItem}>
@@ -286,7 +336,23 @@ const PizzaGridItem: React.FC<PizzaGridItemProps> = ({ template, availableIngred
                     <button onClick={handleSoldSubmit} className={classes.soldButton}>OK</button>
                 </div>
                 {user && user.roles[0].name === 'manager' && (
-                    <button onClick={handleDeletePizza} className={classes.deleteButton}>Delete Pizza</button>
+                    <>
+                        <button onClick={handleDeletePizza} className={classes.deleteButton}>Delete Pizza</button>
+                        <Modal
+                            isOpen={isModalOpen}
+                            onRequestClose={cancelDeletePizza}
+                            contentLabel="Confirm Delete Pizza"
+                            className={classes.modalContent}
+                            overlayClassName={classes.modalOverlay}
+                        >
+                            <h2>Confirm Delete</h2>
+                            <p>Are you sure you want to delete the pizza template "{template.name}"?</p>
+                            <div className={classes.modalButtons}>
+                                <button onClick={confirmDeletePizza} className={`${classes.modalButton} ${classes.confirmButton}`}>Yes</button>
+                                <button onClick={cancelDeletePizza} className={`${classes.modalButton} ${classes.cancelButton}`}>No</button>
+                            </div>
+                        </Modal>
+                    </>
                 )}
             </div>
         </div>
