@@ -207,9 +207,10 @@ const useStyles = createUseStyles({
 
 interface FormProps {
     setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsManager: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Form: React.FC<FormProps> = ({ setIsAuth }) => {
+const Form: React.FC<FormProps> = ({ setIsAuth, setIsManager }) => {
     const classes = useStyles();
     const navigate = useNavigate();
 
@@ -237,6 +238,9 @@ const Form: React.FC<FormProps> = ({ setIsAuth }) => {
             if (response.data) {
                 localStorage.setItem('access_token', response.data.accessToken);
                 setIsAuth(true);
+                const userRoles = response.data.roles;
+                const isManager = userRoles.includes('ROLE_MANAGER');
+                setIsManager(isManager);
                 navigate('/pantry');
             } else {
                 setLoginError('Nieprawidłowy username lub hasło.');

@@ -20,7 +20,7 @@ interface User {
 const App = () => {
     const [isAuth, setIsAuth] = useState(false);
     const [user, setUser] = useState<User | null>(null);
-
+    const [isManager, setIsManager] = useState(false);
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('access_token');
@@ -49,18 +49,16 @@ const App = () => {
         };
     }, []);
 
-    const isManager = user && user.roles.some(role => role.name === 'ROLE_MANAGER');
-
     return (
         <Router>
             <Routes>
-                <Route path="/" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} />} />
-                <Route path="/pantry" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} />} />
-                <Route path="/login" element={!isAuth ? <Login setIsAuth={setIsAuth} /> : <Pantry />} />
+                <Route path="/" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/pantry" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/login" element={!isAuth ? <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/> : <Pantry />} />
                 <Route path="/register" element={!isAuth ? <Register /> : <Pantry />} />
-                <Route path="/profile" element={isAuth ? <Profile /> : <Login setIsAuth={setIsAuth} />} />
-                <Route path="/pizzametrics" element={isAuth ? <PizzaMetrics /> : <Login setIsAuth={setIsAuth} />} />
-                <Route path="/pizzacreator" element={isAuth ? (isManager ? <PizzaCreator /> : <Unauthorized />) : <Login setIsAuth={setIsAuth} />} />
+                <Route path="/profile" element={isAuth ? <Profile /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/pizzametrics" element={isAuth ? <PizzaMetrics /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/pizzacreator" element={isAuth ? (isManager ? <PizzaCreator/> : <Unauthorized />) : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
             </Routes>
             <ToastContainer
                 position="top-right"

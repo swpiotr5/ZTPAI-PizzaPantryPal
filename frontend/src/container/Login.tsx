@@ -65,16 +65,17 @@ const useStyles = createUseStyles({
 
 interface LoginProps {
     setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsManager: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Login: React.FC<LoginProps> = ({ setIsAuth }) =>  {
+const Login: React.FC<LoginProps> = ({ setIsAuth , setIsManager}) =>  {
     const classes = useStyles();
 
     return (
         <div className={classes.root}>
             <div className={classes.wrapper}>
                 <LeftWrapper />
-                <RightWrapper setIsAuth={setIsAuth}/>
+                <RightWrapper setIsAuth={setIsAuth} setIsManager={setIsManager}/>
             </div>
         </div>
     );
