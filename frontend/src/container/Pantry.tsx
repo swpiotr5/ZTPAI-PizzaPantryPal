@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState } from 'react';
 import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import { createUseStyles } from 'react-jss';
 import PantryItem from '../components/Pantry/PantryItem';
@@ -65,7 +65,11 @@ interface Ingredient {
     userIngredients: null;
 }
 
-const Pantry = () => {
+interface ManagerProps {
+    isManager: boolean;
+}
+
+const Pantry: React.FC<ManagerProps> = ({isManager}) =>  {
     const classes = useStyles();
     const [availableIngredients, setAvailableIngredients] = useState<Ingredient[]>([]);
     const [userIngredients, setUserIngredients] = useState<Ingredient[]>([]);
@@ -142,6 +146,7 @@ const Pantry = () => {
                                 ingredient={ingredient}
                                 selectedButton={selectedButton}
                                 onNewIngredientAdded={handleNewIngredientAdded}
+                                isManager={isManager}
                             />
                         ))}
                     </div>

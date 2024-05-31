@@ -2,6 +2,7 @@ import React, { FormEvent, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import Modal from 'react-modal';
 
 const useStyles = createUseStyles({
     gridItem: {
@@ -64,6 +65,17 @@ const useStyles = createUseStyles({
             backgroundColor: '#43766C',
         },
     },
+    deleteButton: {
+        padding: '5px 10px',
+        borderRadius: '4px',
+        border: 'none',
+        backgroundColor: 'red',
+        color: '#fff',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'darkred',
+        },
+    },
     spc: {
         display: 'flex',
         gap: '10px',
@@ -78,6 +90,48 @@ const useStyles = createUseStyles({
         '@media (max-width: 1080px)': {
             marginLeft: '10px',
             marginRight: '10px',
+        },
+    },
+    modalContent: {
+        position: 'absolute',
+        width: '80%',
+        maxWidth: '400px',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: '#FFF',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
+        textAlign: 'center',
+    },
+    modalOverlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalButtons: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: '20px',
+    },
+    modalButton: {
+        padding: '8px 16px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        borderRadius: '5px',
+        border: 'none',
+    },
+    confirmButton: {
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#45a049',
+        },
+    },
+    cancelButton: {
+        backgroundColor: '#f44336',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#d32f2f',
         },
     },
 });
@@ -96,12 +150,14 @@ interface PantryItemProps {
     ingredient: Ingredient;
     selectedButton: string;
     onNewIngredientAdded: () => void;
+    isManager: boolean;
 }
 
-const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }: PantryItemProps) => {
+const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded, isManager }: PantryItemProps) => {
     const classes = useStyles();
     const [quantity, setQuantity] = useState('');
     const [unit, setUnit] = useState('g');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -127,7 +183,35 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
                 toast.error('Error adding or updating ingredient');
                 console.error('Error:', error);
             });
+    };
 
+    const handleDelete = () => {
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        const token = localStorage.getItem('access_token');
+
+        axios.delete(`http://localhost:8080/api/user_ingredients/delete/${ingredient.ingredient_id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        })
+            .then(response => {
+                toast.success('Ingredient deleted successfully');
+                onNewIngredientAdded();
+            })
+            .catch(error => {
+                toast.error('Error deleting ingredient');
+                console.error('Error:', error);
+            });
+
+        setIsModalOpen(false);
+    };
+
+
+    const cancelDelete = () => {
+        setIsModalOpen(false);
     };
 
     return (
@@ -150,8 +234,25 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded }:
                             <button type="submit" className={classes.button}>OK</button>
                         </form>
                     )}
+                    {selectedButton === 'User Ingredients' && isManager && (
+                        <button className={classes.deleteButton} onClick={handleDelete}>Delete</button>
+                    )}
                 </div>
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={cancelDelete}
+                contentLabel="Confirm Delete Ingredient"
+                className={classes.modalContent}
+                overlayClassName={classes.modalOverlay}
+            >
+                <h2>Confirm Delete</h2>
+                <p>Are you sure you want to delete the ingredient "{ingredient.name}"?</p>
+                <div className={classes.modalButtons}>
+                    <button onClick={confirmDelete} className={`${classes.modalButton} ${classes.confirmButton}`}>Yes</button>
+                    <button onClick={cancelDelete} className={`${classes.modalButton} ${classes.cancelButton}`}>No</button>
+                </div>
+            </Modal>
         </div>
     );
 };

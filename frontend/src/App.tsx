@@ -52,10 +52,10 @@ const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
-                <Route path="/pantry" element={isAuth ? <Pantry /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
-                <Route path="/login" element={!isAuth ? <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/> : <Pantry />} />
-                <Route path="/register" element={!isAuth ? <Register /> : <Pantry />} />
+                <Route path="/" element={isAuth ? <Pantry isManager={isManager}/> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/pantry" element={isAuth ? <Pantry isManager={isManager}/> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
+                <Route path="/login" element={!isAuth ? <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/> : <Pantry isManager={isManager}/>} />
+                <Route path="/register" element={!isAuth ? <Register /> : <Pantry isManager={isManager}/>} />
                 <Route path="/profile" element={isAuth ? <Profile /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
                 <Route path="/pizzametrics" element={isAuth ? <PizzaMetrics /> : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />
                 <Route path="/pizzacreator" element={isAuth ? (isManager ? <PizzaCreator/> : <Unauthorized />) : <Login setIsAuth={setIsAuth} setIsManager={setIsManager}/>} />

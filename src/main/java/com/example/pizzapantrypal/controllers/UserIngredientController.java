@@ -145,6 +145,26 @@ public class UserIngredientController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 
+    @DeleteMapping("/delete/{ingredientId}")
+    public ResponseEntity<String> deleteUserIngredient(@PathVariable Long ingredientId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            Long userId = userDetails.getId();
+
+            Optional<UserIngredient> userIngredient = userIngredientRepository.findByUserIdAndAvailableIngredient(userId, Math.toIntExact(ingredientId));
+
+            if (userIngredient.isPresent()) {
+                userIngredientRepository.delete(userIngredient.get());
+                return ResponseEntity.ok("Ingredient deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingredient not found");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+    }
+
+
 }
 
 class SaleRequest {
