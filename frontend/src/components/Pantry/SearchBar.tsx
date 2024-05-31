@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
         borderRadius: '5px',
         border: '1px solid #ccc',
         flex: '1',
-        backgroundColor:  '#F8FAE5',
+        backgroundColor: '#F8FAE5',
         fontSize: '20px',
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -36,7 +36,12 @@ const useStyles = createUseStyles({
     },
 });
 
-const SearchBar = () => {
+interface SearchBarProps {
+    searchQuery: string;
+    onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, onSearchChange }) => {
     const classes = useStyles();
 
     return (
@@ -47,6 +52,8 @@ const SearchBar = () => {
             <input
                 type="text"
                 placeholder="Search your pantry"
+                value={searchQuery}
+                onChange={onSearchChange}
                 className={classes.searchInput}
             />
         </div>

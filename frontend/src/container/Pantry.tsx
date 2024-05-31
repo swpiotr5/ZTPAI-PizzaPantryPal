@@ -69,12 +69,13 @@ interface ManagerProps {
     isManager: boolean;
 }
 
-const Pantry: React.FC<ManagerProps> = ({isManager}) =>  {
+const Pantry: React.FC<ManagerProps> = ({ isManager }) => {
     const classes = useStyles();
     const [availableIngredients, setAvailableIngredients] = useState<Ingredient[]>([]);
     const [userIngredients, setUserIngredients] = useState<Ingredient[]>([]);
     const [displayedIngredients, setDisplayedIngredients] = useState<Ingredient[]>([]);
     const [selectedButton, setSelectedButton] = useState('Available Ingredients');
+    const [searchQuery, setSearchQuery] = useState('');  // New state for search query
     const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
@@ -108,21 +109,17 @@ const Pantry: React.FC<ManagerProps> = ({isManager}) =>  {
     }, [refresh]);
 
     useEffect(() => {
-        if (selectedButton === 'Available Ingredients') {
-            setDisplayedIngredients(availableIngredients);
-        } else {
-            if (userIngredients.length === 0) {
-                setDisplayedIngredients([]);
-            } else {
-                const userIngredientIds = userIngredients.map(ingredient => ingredient.availableIngredient);
-                const filteredIngredients = availableIngredients.filter(ingredient => userIngredientIds.includes(ingredient.ingredient_id)).map(ingredient => {
-                    const userIngredient = userIngredients.find(ui => ui.availableIngredient === ingredient.ingredient_id);
-                    return { ...ingredient, amount: userIngredient?.amount, unit: userIngredient?.unit };
-                });
-                setDisplayedIngredients(filteredIngredients);
-            }
+        let ingredientsToDisplay = selectedButton === 'Available Ingredients' ? availableIngredients : userIngredients.length ? availableIngredients.filter(ingredient => userIngredients.some(ui => ui.availableIngredient === ingredient.ingredient_id)).map(ingredient => {
+            const userIngredient = userIngredients.find(ui => ui.availableIngredient === ingredient.ingredient_id);
+            return { ...ingredient, amount: userIngredient?.amount, unit: userIngredient?.unit };
+        }) : [];
+
+        if (searchQuery) {
+            ingredientsToDisplay = ingredientsToDisplay.filter(ingredient => ingredient.name.toLowerCase().includes(searchQuery.toLowerCase()));
         }
-    }, [selectedButton, availableIngredients, userIngredients]);
+
+        setDisplayedIngredients(ingredientsToDisplay);
+    }, [selectedButton, availableIngredients, userIngredients, searchQuery]);
 
     const handleButtonClick = (buttonName: string) => {
         setSelectedButton(buttonName);
@@ -132,11 +129,15 @@ const Pantry: React.FC<ManagerProps> = ({isManager}) =>  {
         setRefresh(!refresh);
     }
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+    }
+
     return (
         <div>
             <DefaultTemplate>
                 <div className={classes.wrapper}>
-                    <SearchBar />
+                    <SearchBar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
                     <SortingButtons handleButtonClick={handleButtonClick as (buttonName: string) => void} />
                     <div className={classes.gridContainer}>
                         {displayedIngredients.map((ingredient, index) => (
