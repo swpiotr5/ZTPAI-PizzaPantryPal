@@ -1,4 +1,3 @@
-// PizzaMetrics.tsx
 import React, { useEffect, useState } from 'react';
 import DefaultTemplate from "../components/DefaultTemplate/DefaultTemplate";
 import { createUseStyles } from 'react-jss';
@@ -43,8 +42,10 @@ const useStyles = createUseStyles({
 const PizzaMetrics = () => {
     const classes = useStyles();
     const [pizzaTemplates, setPizzaTemplates] = useState<PizzaTemplate[]>([]);
-    const [availableIngredients, setAvailableIngredients] = useState<any[]>([]); // Dodajemy stan do przechowywania dostępnych składników
+    const [availableIngredients, setAvailableIngredients] = useState<any[]>([]);
     const [refresh, setRefresh] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');  // New state for search query
+
     useEffect(() => {
         const fetchPizzaTemplates = async () => {
             try {
@@ -81,12 +82,20 @@ const PizzaMetrics = () => {
         setRefresh(!refresh);
     }
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+    }
+
+    const filteredTemplates = pizzaTemplates.filter(template =>
+        template.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div>
             <DefaultTemplate>
                 <div className={classes.wrapper}>
-                    <SearchContainer />
-                    <PizzaGrid pizzaTemplates={pizzaTemplates} availableIngredients={availableIngredients} onTemplateDeleted={handleTemplateDeleted}/>
+                    <SearchContainer searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+                    <PizzaGrid pizzaTemplates={filteredTemplates} availableIngredients={availableIngredients} onTemplateDeleted={handleTemplateDeleted} />
                 </div>
             </DefaultTemplate>
         </div>

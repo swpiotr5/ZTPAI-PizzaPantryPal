@@ -36,7 +36,12 @@ const useStyles = createUseStyles({
     },
 });
 
-const SearchContainer = () => {
+interface SearchContainerProps {
+    searchQuery: string;
+    onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const SearchContainer: React.FC<SearchContainerProps> = ({ searchQuery, onSearchChange }) => {
     const classes = useStyles();
 
     return (
@@ -47,6 +52,8 @@ const SearchContainer = () => {
             <input
                 type="text"
                 placeholder="Search for your pizza.."
+                value={searchQuery}
+                onChange={onSearchChange}
                 className={classes.searchInput}
             />
         </div>
