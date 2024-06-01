@@ -1,9 +1,7 @@
 package com.example.pizzapantrypal.controllers;
+import com.example.pizzapantrypal.models.*;
+import com.example.pizzapantrypal.repository.AvailableIngredientRepository;
 import org.springframework.scheduling.annotation.Async;
-import com.example.pizzapantrypal.models.PizzaTemplate;
-import com.example.pizzapantrypal.models.PizzaTemplateIngredient;
-import com.example.pizzapantrypal.models.UserIngredient;
-import com.example.pizzapantrypal.models.Users;
 import com.example.pizzapantrypal.repository.PizzaTemplateRepository;
 import com.example.pizzapantrypal.repository.UserIngredientRepository;
 import com.example.pizzapantrypal.repository.UserRepository;
@@ -35,6 +33,9 @@ public class UserIngredientController {
 
     @Autowired
     private PizzaTemplateRepository pizzaTemplateRepository;
+
+    @Autowired
+    private AvailableIngredientRepository availableIngredientRepository;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -188,17 +189,26 @@ public class UserIngredientController {
     @Async
     protected CompletableFuture<Void> sendLowIngredientNotification(UserIngredient userIngredient) {
         try {
+            // Fetch the AvailableIngredient object from the database
+            AvailableIngredient availableIngredient = availableIngredientRepository.findById(userIngredient.getAvailableIngredient())
+                    .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+
+            // Get the ingredient name
+            String ingredientName = availableIngredient.getName();
+
+            // Pobierz adres e-mail użytkownika
             String userEmail = userIngredient.getUser().getEmail();
 
+            // Wysyłanie powiadomienia e-mail
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(userEmail);
             message.setSubject("Low Ingredient Notification");
-            message.setText("Attention! Ingredient " + userIngredient.getAvailableIngredient() + " is running low. Check your pantry.");
+            message.setText("Attention! Ingredient " + ingredientName + " is running low. Check your pantry.");
 
             mailSender.send(message);
 
             // Wysyłanie powiadomienia do RabbitMQ
-            String notificationMessage = "Attention! Ingredient " + userIngredient.getAvailableIngredient() + " is running low. Check your pantry.";
+            String notificationMessage = "Attention! Ingredient " + ingredientName + " is running low. Check your pantry.";
             rabbitTemplate.convertAndSend(exchange, routingKey, notificationMessage);
         } catch (Exception e) {
             // Obsługa błędu
