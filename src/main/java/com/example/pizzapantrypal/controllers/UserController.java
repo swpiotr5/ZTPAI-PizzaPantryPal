@@ -1,17 +1,14 @@
 package com.example.pizzapantrypal.controllers;
 
-import com.example.pizzapantrypal.models.Roles;
+import com.example.pizzapantrypal.models.*;
+import com.example.pizzapantrypal.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import com.example.pizzapantrypal.models.Users;
-import com.example.pizzapantrypal.repository.UserRepository;
 import com.example.pizzapantrypal.security.services.UserDetailsImpl;
-import com.example.pizzapantrypal.models.UserRole;
-import com.example.pizzapantrypal.repository.UserRolesRepository;
 import com.example.pizzapantrypal.models.Roles;
-import com.example.pizzapantrypal.repository.RoleRepository;
+
 import java.util.List;
 
 @RestController
@@ -27,6 +24,16 @@ public class UserController {
     @Autowired
     RoleRepository rolesRepository;
 
+    @Autowired
+    private UserIngredientRepository userIngredientRepository;
+
+    @Autowired
+    private PizzaTemplateRepository pizzaTemplateRepository;
+
+    @Autowired
+    private PizzaTemplateIngredientRepository pizzaTemplateIngredientRepository;
+
+
     @GetMapping("/current")
     public Users getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -41,7 +48,19 @@ public class UserController {
 
     @PostMapping("/delete")
     public void deleteUser(@RequestBody String username) {
-        userRepository.deleteByUsername(username);
+        Users user = userRepository.findByUsername(username).orElse(null);
+        if (user != null) {
+            List<UserIngredient> userIngredients = userIngredientRepository.findByUserId(user.getId());
+            userIngredientRepository.deleteAll(userIngredients);
+
+            List<PizzaTemplate> pizzaTemplates = pizzaTemplateRepository.findByUserId(user.getId());
+            for (PizzaTemplate pizzaTemplate : pizzaTemplates) {
+                List<PizzaTemplateIngredient> pizzaTemplateIngredients = pizzaTemplateIngredientRepository.findByTemplateId(pizzaTemplate.getId());
+                pizzaTemplateIngredientRepository.deleteAll(pizzaTemplateIngredients);
+            }
+            pizzaTemplateRepository.deleteAll(pizzaTemplates);
+            userRepository.delete(user);
+        }
     }
 
     @PostMapping("/changerole")
