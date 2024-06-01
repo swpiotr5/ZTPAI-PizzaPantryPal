@@ -1,5 +1,5 @@
 package com.example.pizzapantrypal.controllers;
-
+import org.springframework.scheduling.annotation.Async;
 import com.example.pizzapantrypal.models.PizzaTemplate;
 import com.example.pizzapantrypal.models.PizzaTemplateIngredient;
 import com.example.pizzapantrypal.models.UserIngredient;
@@ -8,15 +8,20 @@ import com.example.pizzapantrypal.repository.PizzaTemplateRepository;
 import com.example.pizzapantrypal.repository.UserIngredientRepository;
 import com.example.pizzapantrypal.repository.UserRepository;
 import com.example.pizzapantrypal.security.services.UserDetailsImpl;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/user_ingredients")
@@ -30,6 +35,18 @@ public class UserIngredientController {
 
     @Autowired
     private PizzaTemplateRepository pizzaTemplateRepository;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
 
     @GetMapping
     public List<UserIngredient> getAllUserIngredients() {
@@ -130,7 +147,11 @@ public class UserIngredientController {
                             // Check if the ingredient amount is 0 or less after subtraction
                             if (userIngredient.getAmount() <= 0) {
                                 userIngredientRepository.delete(userIngredient);
+                                sendLowIngredientNotification(userIngredient);
                             } else {
+                                if (userIngredient.getAmount() < 20) {
+                                    sendLowIngredientNotification(userIngredient);
+                                }
                                 userIngredientRepository.save(userIngredient);
                             }
                             break;
@@ -164,7 +185,27 @@ public class UserIngredientController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 
+    @Async
+    protected CompletableFuture<Void> sendLowIngredientNotification(UserIngredient userIngredient) {
+        try {
+            String userEmail = userIngredient.getUser().getEmail();
 
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(userEmail);
+            message.setSubject("Low Ingredient Notification");
+            message.setText("Attention! Ingredient " + userIngredient.getAvailableIngredient() + " is running low. Check your pantry.");
+
+            mailSender.send(message);
+
+            // Wysyłanie powiadomienia do RabbitMQ
+            String notificationMessage = "Attention! Ingredient " + userIngredient.getAvailableIngredient() + " is running low. Check your pantry.";
+            rabbitTemplate.convertAndSend(exchange, routingKey, notificationMessage);
+        } catch (Exception e) {
+            // Obsługa błędu
+            e.printStackTrace();
+        }
+        return CompletableFuture.completedFuture(null);
+    }
 }
 
 class SaleRequest {
