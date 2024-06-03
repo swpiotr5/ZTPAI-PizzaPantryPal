@@ -36,6 +36,10 @@ const useStyles = createUseStyles({
         '&:hover': {
             transform: 'scale(1.05)',
         },
+        '@media (max-width: 600px)': {
+            backgroundColor: '#B19470',
+        },
+
     },
     image: {
         width: '120px',
@@ -46,6 +50,9 @@ const useStyles = createUseStyles({
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+        },
+        '@media (max-width: 600px)': {
+            display: 'none',
         },
     },
     info: {

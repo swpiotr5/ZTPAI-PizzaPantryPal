@@ -39,7 +39,7 @@ const useStyles = createUseStyles({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         width: '80%',
         height: '90vh',
         maxWidth: '1500px',

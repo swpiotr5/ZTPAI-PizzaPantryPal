@@ -22,6 +22,7 @@ const useStyles = createUseStyles({
         borderRadius: '15px',
         '@media (max-width: 600px)': {
             marginTop: '80px',
+            justifyContent: 'flex-start',
             borderRadius: '20px',
             width: '100%',
             backgroundColor: '#F8FAE5',
@@ -88,8 +89,7 @@ const useStyles = createUseStyles({
         flexDirection: 'column',
         alignItems: 'center',
         '@media (max-width: 600px)': {
-            height: '60%',
-            marginBottom: '200px',
+            height: '80%',
         },
         overflow: 'auto',
     },
