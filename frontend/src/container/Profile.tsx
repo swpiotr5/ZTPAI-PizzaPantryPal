@@ -26,7 +26,7 @@ const useStyles = createUseStyles({
         overflow: 'auto',
         backgroundColor: '#F8FAE5',
         borderRadius: '15px',
-        padding: '20px',
+        padding: '60px',
         boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
         '@media (max-width: 600px)': {
             marginTop: '80px',

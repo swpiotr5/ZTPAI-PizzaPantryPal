@@ -10,32 +10,44 @@ const useStyles = createUseStyles({
         height: '150px',
         margin: '0 30px 30px 0',
         backgroundColor: '#F8FAE5',
-        borderRadius: '15px',
+        borderRadius: '20px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+        '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 8px 10px rgba(0, 0, 0, 0.15)',
+        },
         '@media (max-width: 600px)': {
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
-            height: '150px',
+            height: '200px',
             margin: '15px 30px',
+            width: 'calc(100% - 60px)',
         },
     },
     gridItemContent: {
         display: 'flex',
-        gap: '30px',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '30px',
+        padding: '20px',
         height: '100%',
-        fontSize: '25px',
+        fontSize: '18px',
         '@media (max-width: 600px)': {
-            width: '100%',
-            fontSize: '18px',
             gap: '10px',
+            width: '100%',
+            fontSize: '16px',
+            padding: '10px',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-        }
+        },
     },
     gridItemImage: {
+        width: '80px',
+        height: '80px',
+        objectFit: 'cover',
+        borderRadius: '10px',
         '@media (max-width: 600px)': {
             width: '50px',
+            height: '50px',
         },
     },
     form: {
@@ -80,12 +92,16 @@ const useStyles = createUseStyles({
         display: 'flex',
         gap: '10px',
         alignItems: 'center',
+        '@media (max-width: 600px)': {
+            flexDirection: 'column',
+        },
     },
     spanText: {
+        fontWeight: 'bold',
         '@media (max-width: 600px)': {
             width: '140px',
             fontSize: '16px',
-            marginRight: '2px',
+            textAlign: 'center',
         },
         '@media (max-width: 1080px)': {
             marginLeft: '10px',
@@ -208,7 +224,6 @@ const PantryItem = ({ index, ingredient, selectedButton, onNewIngredientAdded, i
 
         setIsModalOpen(false);
     };
-
 
     const cancelDelete = () => {
         setIsModalOpen(false);
